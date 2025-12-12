@@ -118,6 +118,9 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <!-- Babel for JSX transpilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
 </head>
 <body class="bg-white">
@@ -340,23 +343,25 @@
       };
       
       // --- From components/ProjectsSection.tsx ---
-      const ProjectsSection = ({ projects, isAdmin, onAdd, onEdit, onDelete }) => {
+      const ProjectsSection = ({ projects, isAdmin, onAdd, onEdit, onDelete, onView }) => {
         const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
         const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> );
         
-        const ProjectCard = ({ project, isAdmin, onEdit, onDelete }) => {
+        const ProjectCard = ({ project, isAdmin, onEdit, onDelete, onView }) => {
             return (
                 <Card className="flex flex-col h-full group">
                     {isAdmin && ( <div className="absolute top-2 right-2 flex gap-2"><button onClick={() => onEdit(project)} className="sketch-button bg-yellow-200 p-2"><EditIcon/></button><button onClick={() => onDelete(project.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon/></button></div> )}
-                    <div className="aspect-[4/3] bg-gray-100 border-2 border-black mb-4"><img src={project.mediaUrl} alt={project.title} className="w-full h-full object-cover" /></div>
+                    <div className="aspect-[4/3] bg-gray-100 border-2 border-black mb-4 cursor-pointer" onClick={() => onView(project)}>
+                      <img src={project.mediaUrl} alt={project.title} className="w-full h-full object-cover" />
+                    </div>
                     <div className="flex-grow flex flex-col">
                         <span className="text-sm bg-black text-white px-2 py-0.5 self-start font-alt mb-2">{project.type}</span>
                         <h3 className="text-2xl font-heading font-bold">{project.title}</h3>
                         <p className="text-gray-700 flex-grow mt-1">{project.description}</p>
                         <div className="mt-4 flex flex-wrap gap-2">{project.tags.map(tag => ( <span key={tag} className="text-xs bg-gray-200 border border-black px-2 py-1">{tag}</span> ))}</div>
                     </div>
-                    {project.projectUrl && ( <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="sketch-button bg-blue-300 mt-4 text-center py-2">View Project</a> )}
+                    <button onClick={() => onView(project)} className="sketch-button bg-blue-300 mt-4 text-center py-2">View Project</button>
                 </Card>
             );
         };
@@ -375,7 +380,7 @@
               {projectTypes.map(type => ( <button key={type} onClick={() => setFilter(type)} className={`sketch-button px-4 py-1 text-sm ${filter === type ? 'bg-yellow-300' : 'bg-white'}`}>{type}</button>))}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredProjects.map(project => ( <ProjectCard key={project.id} project={project} isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} /> ))}
+              {filteredProjects.map(project => ( <ProjectCard key={project.id} project={project} isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} onView={onView} /> ))}
               {filteredProjects.length === 0 && <p className="font-alt text-gray-500">No projects of this type yet. Scribble some up!</p>}
             </div>
           </section>
@@ -729,80 +734,168 @@
           );
       };
 
+      // --- New Component: ProjectViewerModal ---
+      const ProjectViewerModal = ({ project, onClose }) => {
+          if (!project) return null;
+
+          const getYoutubeEmbedUrl = (url) => {
+              const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+              const match = (url || '').match(regExp);
+              return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+          };
+
+          const embedUrl = project.type === ProjectType.VIDEO ? getYoutubeEmbedUrl(project.mediaUrl) : null;
+
+          return (
+              <div 
+                  className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+                  onClick={onClose}
+              >
+                  <div 
+                      className="sketch-card bg-white p-6 w-full max-w-3xl max-h-[90vh] flex flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                  >
+                      <div className="flex justify-between items-start mb-4">
+                          <h2 className="text-4xl font-heading font-bold">{project.title}</h2>
+                          <button onClick={onClose} className="sketch-button bg-gray-200 px-3 py-1 font-bold">X</button>
+                      </div>
+
+                      <div className="flex-grow overflow-y-auto pr-2">
+                          {project.type === ProjectType.IMAGE && <img src={project.mediaUrl} alt={project.title} className="w-full h-auto border-2 border-black" />}
+                          
+                          {project.type === ProjectType.VIDEO && embedUrl && (
+                              <div className="aspect-video w-full">
+                                  <iframe src={embedUrl} title={project.title} className="w-full h-full border-2 border-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                              </div>
+                          )}
+                          
+                          {(project.type === ProjectType.EBOOK || project.type === ProjectType.DOCUMENT || project.type === ProjectType.OTHER) && (
+                              <img src={project.mediaUrl} alt="Project preview" className="w-full h-auto border-2 border-black mb-4" />
+                          )}
+
+                          <div className="w-full border-t-2 border-dashed border-black my-4"></div>
+                          
+                          <p className="text-gray-800 whitespace-pre-wrap">{project.description}</p>
+
+                          {project.tags && project.tags.length > 0 && (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                  {project.tags.map(tag => ( <span key={tag} className="text-xs bg-gray-200 border border-black px-2 py-1">{tag}</span> ))}
+                              </div>
+                          )}
+                      </div>
+
+                      {project.projectUrl && project.type !== ProjectType.WEBSITE && (
+                          <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="sketch-button bg-blue-300 mt-4 text-center py-2">
+                              Open Full Project
+                          </a>
+                      )}
+                  </div>
+              </div>
+          );
+      };
+
 
       // --- From App.tsx ---
       const App = () => {
         const ADMIN_PASSWORD = 'emergent';
         const ADMIN_USERNAME = 'seri.wrts';
-        const STORAGE_PREFIX = 'portfolio-app-';
 
-        // --- Initial Data ---
-        const initialProfile = {
-          name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
-          expertise: "Creative Developer & Storyteller", location: "Sketchburg, ART",
-          company: { name: "Inkwell Studios", url: "#" },
-          bio: "I turn ideas into interactive, hand-drawn experiences. With a passion for unique UIs and a love for all things sketched, I build web applications that don't just work well, but also have a personality. This whole portfolio is a testament to that philosophy!",
-          socials: { linkedin: '#', github: '#', twitter: '#' },
-          email: 'hello@alexsketch.com', patreonUrl: 'https://www.patreon.com/c/AzaleaAutumn',
-        };
-        const initialProjects = [
-          { id: '1', title: 'Interactive Storybook', description: 'A web-based storybook with animated sketches and clickable elements.', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/storybook/400/300', projectUrl: '#', tags: ['React', 'Animation', 'UI/UX'] },
-          { id: '2', title: 'Character Sketches', description: 'A collection of character designs for an upcoming animated short.', type: ProjectType.IMAGE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/characters/400/300', tags: ['Illustration', 'Art'] },
-          { id: '3', title: 'Animation Reel', description: 'A short reel showcasing various hand-drawn animation techniques.', type: ProjectType.VIDEO, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/reel/400/300', tags: ['Animation', 'Motion Graphics'] },
-          { id: '4', title: 'The Art of Sketching', description: 'An eBook guide to digital sketching for beginners.', type: ProjectType.EBOOK, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/ebook/400/300', projectUrl: '#', tags: ['Education', 'Art'] },
-          { id: '5', title: 'Portfolio Backend API', description: 'The powerful backend driving this very portfolio.', type: ProjectType.OTHER, status: ProjectStatus.IN_PROGRESS, mediaUrl: 'https://picsum.photos/seed/api/400/300', tags: ['Node.js', 'API'], progress: 75 },
-          { id: '6', title: 'SVG Icon Pack', description: 'A new set of hand-drawn SVG icons for developers.', type: ProjectType.OTHER, status: ProjectStatus.UPCOMING, mediaUrl: 'https://picsum.photos/seed/svg/400/300', tags: ['Design', 'SVG'], progress: 20 },
-        ];
-        const initialPosts = [
-          { id: 'post3', type: PostType.POLL, title: 'What should my next project be?', content: 'Vote for the idea you find most exciting!', timestamp: '1 day ago', reactions: {'🤔': 5}, pollOptions: [{id: 'opt1', text: 'A retro game'}, {id: 'opt2', text: 'An animated short'}, {id: 'opt3', text: 'A new icon pack'}], pollVotes: {'opt1': 12, 'opt2': 25, 'opt3': 8} },
-          { id: 'post2', type: PostType.IMAGE, title: 'New Character Design', content: 'Here\'s a sneak peek of a character for an upcoming project!', mediaUrl: 'https://picsum.photos/seed/new-char/600/400', timestamp: '3 days ago', reactions: { '❤️': 18, '👀': 11 } },
-          { id: 'post1', type: PostType.TEXT, title: 'Portfolio Launch!', content: 'Welcome to my new portfolio! I built it with React and a whole lot of sketches.', timestamp: '1 week ago', reactions: { '🎉': 25, '👍': 15 } },
-        ];
-        const initialBlogPosts = [
-            { id: 'blog1', title: 'My Journey into Creative Coding', content: 'It all started with a single blinking cursor...\n\nI wanted to build things that felt alive, that had personality. This portfolio is the culmination of that desire, blending code with a hand-drawn aesthetic to create something uniquely me.\n\nEvery line of code, every sketchy border, is a testament to the idea that the web doesn\'t have to be boring.', timestamp: '2 weeks ago', tags: ['creative-coding', 'react', 'design'] },
-            { id: 'blog2', title: 'The Power of a Sketch', content: 'Never underestimate the power of a simple sketch. They can convey complex ideas in a simple, accessible way. They break down barriers and invite people in.\n\nIn a world of pixel-perfect designs, a little bit of handcrafted charm can go a long way.', timestamp: '1 month ago', tags: ['art', 'philosophy', 'ui/ux'] }
-        ];
-        const initialRequests = [
-            { id: 'req1', text: 'Can you make a tutorial on how you created the sketchy borders?', timestamp: '4 days ago', upvotes: 18 },
-            { id: 'req2', text: '#MoreAnimations! The wiggle effect is great.', timestamp: '1 week ago', upvotes: 12 },
-        ];
-        const initialComments = [
-          { id: 'c1', author: 'ArtFan', text: 'This portfolio is so creative! Love the sketchy style.', timestamp: '2 hours ago', reactions: { '❤️': 10, '👍': 5 } },
-          { id: 'c2', author: 'DevDude', text: 'Nice work on the animations. How did you achieve the wiggle effect on hover?', timestamp: '1 hour ago', reactions: { '🤔': 3 } },
-        ];
-
-        // --- LocalStorage Logic ---
-        const getInitialState = (key, defaultValue) => {
-          try {
-            const item = window.localStorage.getItem(`${STORAGE_PREFIX}${key}`);
-            return item ? JSON.parse(item) : defaultValue;
-          } catch (error) {
-            console.error(`Error reading from localStorage for key "${key}":`, error);
-            return defaultValue;
-          }
-        };
-
-        const usePersistentState = (key, defaultValue) => {
-            const [state, setState] = useState(() => getInitialState(key, defaultValue));
-
-            useEffect(() => {
-                try {
-                    window.localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(state));
-                } catch (error) {
-                    console.error(`Error writing to localStorage for key "${key}":`, error);
-                }
-            }, [key, state]);
-
-            return [state, setState];
+        // --- Firebase Configuration ---
+        // IMPORTANT: PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_PROJECT.firebaseapp.com",
+          databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_PROJECT.appspot.com",
+          messagingSenderId: "YOUR_SENDER_ID",
+          appId: "YOUR_APP_ID"
         };
         
+        // --- Initial Data (used only if database is empty) ---
+        const initialData = {
+          profile: {
+            name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
+            expertise: "Creative Developer & Storyteller", location: "Sketchburg, ART",
+            company: { name: "Inkwell Studios", url: "#" },
+            bio: "I turn ideas into interactive, hand-drawn experiences. With a passion for unique UIs and a love for all things sketched, I build web applications that don't just work well, but also have a personality. This whole portfolio is a testament to that philosophy!",
+            socials: { linkedin: '#', github: '#', twitter: '#' },
+            email: 'azaleatvm@gmail.com', patreonUrl: 'https://www.patreon.com/c/AzaleaAutumn',
+          },
+          projects: [
+            { id: '1', title: 'Interactive Storybook', description: 'A web-based storybook with animated sketches and clickable elements.', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/storybook/400/300', projectUrl: '#', tags: ['React', 'Animation', 'UI/UX'] },
+            { id: '2', title: 'Character Sketches', description: 'A collection of character designs for an upcoming animated short.', type: ProjectType.IMAGE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/characters/400/300', tags: ['Illustration', 'Art'] },
+            { id: '3', title: 'Animation Reel', description: 'A short reel showcasing various hand-drawn animation techniques.', type: ProjectType.VIDEO, status: ProjectStatus.COMPLETED, mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', tags: ['Animation', 'Motion Graphics'] },
+            { id: '4', title: 'The Art of Sketching', description: 'An eBook guide to digital sketching for beginners.', type: ProjectType.EBOOK, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/ebook/400/300', projectUrl: '#', tags: ['Education', 'Art'] },
+            { id: '5', title: 'Portfolio Backend API', description: 'The powerful backend driving this very portfolio.', type: ProjectType.OTHER, status: ProjectStatus.IN_PROGRESS, mediaUrl: 'https://picsum.photos/seed/api/400/300', tags: ['Node.js', 'API'], progress: 75 },
+            { id: '6', title: 'SVG Icon Pack', description: 'A new set of hand-drawn SVG icons for developers.', type: ProjectType.OTHER, status: ProjectStatus.UPCOMING, mediaUrl: 'https://picsum.photos/seed/svg/400/300', tags: ['Design', 'SVG'], progress: 20 },
+          ],
+          posts: [
+            { id: 'post3', type: PostType.POLL, title: 'What should my next project be?', content: 'Vote for the idea you find most exciting!', timestamp: '1 day ago', reactions: {'🤔': 5}, pollOptions: [{id: 'opt1', text: 'A retro game'}, {id: 'opt2', text: 'An animated short'}, {id: 'opt3', text: 'A new icon pack'}], pollVotes: {'opt1': 12, 'opt2': 25, 'opt3': 8} },
+            { id: 'post2', type: PostType.IMAGE, title: 'New Character Design', content: 'Here\'s a sneak peek of a character for an upcoming project!', mediaUrl: 'https://picsum.photos/seed/new-char/600/400', timestamp: '3 days ago', reactions: { '❤️': 18, '👀': 11 } },
+            { id: 'post1', type: PostType.TEXT, title: 'Portfolio Launch!', content: 'Welcome to my new portfolio! I built it with React and a whole lot of sketches.', timestamp: '1 week ago', reactions: { '🎉': 25, '👍': 15 } },
+          ],
+          blogPosts: [
+              { id: 'blog1', title: 'My Journey into Creative Coding', content: 'It all started with a single blinking cursor...\n\nI wanted to build things that felt alive, that had personality. This portfolio is the culmination of that desire, blending code with a hand-drawn aesthetic to create something uniquely me.\n\nEvery line of code, every sketchy border, is a testament to the idea that the web doesn\'t have to be boring.', timestamp: '2 weeks ago', tags: ['creative-coding', 'react', 'design'] },
+              { id: 'blog2', title: 'The Power of a Sketch', content: 'Never underestimate the power of a simple sketch. They can convey complex ideas in a simple, accessible way. They break down barriers and invite people in.\n\nIn a world of pixel-perfect designs, a little bit of handcrafted charm can go a long way.', timestamp: '1 month ago', tags: ['art', 'philosophy', 'ui/ux'] }
+          ],
+          requests: [
+              { id: 'req1', text: 'Can you make a tutorial on how you created the sketchy borders?', timestamp: '4 days ago', upvotes: 18 },
+              { id: 'req2', text: '#MoreAnimations! The wiggle effect is great.', timestamp: '1 week ago', upvotes: 12 },
+          ],
+          comments: [
+            { id: 'c1', author: 'ArtFan', text: 'This portfolio is so creative! Love the sketchy style.', timestamp: '2 hours ago', reactions: { '❤️': 10, '👍': 5 } },
+            { id: 'c2', author: 'DevDude', text: 'Nice work on the animations. How did you achieve the wiggle effect on hover?', timestamp: '1 hour ago', reactions: { '🤔': 3 } },
+          ]
+        };
+
+        const dbRef = useRef(null);
+
         // --- State Management ---
-        const [profile, setProfile] = usePersistentState('profile', initialProfile);
-        const [projects, setProjects] = usePersistentState('projects', initialProjects);
-        const [posts, setPosts] = usePersistentState('posts', initialPosts);
-        const [blogPosts, setBlogPosts] = usePersistentState('blogPosts', initialBlogPosts);
-        const [requests, setRequests] = usePersistentState('requests', initialRequests);
-        const [comments, setComments] = usePersistentState('comments', initialComments);
+        const [profile, setProfile] = useState(initialData.profile);
+        const [projects, setProjects] = useState(initialData.projects);
+        const [posts, setPosts] = useState(initialData.posts);
+        const [blogPosts, setBlogPosts] = useState(initialData.blogPosts);
+        const [requests, setRequests] = useState(initialData.requests);
+        const [comments, setComments] = useState(initialData.comments);
+        const [isDbConnected, setIsDbConnected] = useState(false);
+        const [viewingProject, setViewingProject] = useState(null);
+        
+        // --- Firebase Data Sync ---
+        useEffect(() => {
+          if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+            console.warn("Firebase config is not set. Please add your credentials.");
+            return;
+          }
+
+          try {
+            const app = firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            dbRef.current = db.ref('/');
+            setIsDbConnected(true);
+
+            const onDataChange = (snapshot) => {
+              if (snapshot.exists()) {
+                const data = snapshot.val();
+                setProfile(data.profile || initialData.profile);
+                setProjects(data.projects || initialData.projects);
+                setPosts(data.posts || initialData.posts);
+                setBlogPosts(data.blogPosts || initialData.blogPosts);
+                setRequests(data.requests || initialData.requests);
+                setComments(data.comments || initialData.comments);
+              } else {
+                console.log("No data found in Firebase. Uploading initial data.");
+                dbRef.current.set(initialData);
+              }
+            };
+            dbRef.current.on('value', onDataChange);
+            return () => dbRef.current.off('value', onDataChange);
+          } catch (error) {
+            console.error("Error initializing Firebase:", error);
+            alert("Could not connect to the database. Please check your Firebase configuration and security rules.");
+          }
+        }, []);
+
 
         const [isAdminMode, setIsAdminMode] = useState(false);
         const [usernameInput, setUsernameInput] = useState('');
@@ -850,58 +943,104 @@
         }
         const handleLogout = () => setIsAdminMode(false);
         const handleResetData = () => {
+          if (!isDbConnected) return alert("Database not connected.");
           if (window.confirm('Are you sure you want to reset ALL content to the original defaults? This cannot be undone.')) {
-            Object.keys(localStorage).forEach(key => {
-              if (key.startsWith(STORAGE_PREFIX)) {
-                localStorage.removeItem(key);
-              }
-            });
-            window.location.reload();
+            dbRef.current.set(initialData);
           }
         };
 
-        const handleUpdateProfile = (newProfile) => { if(isAdminMode) setProfile(newProfile); };
+        const handleViewProject = (project) => {
+          if (project.type === ProjectType.WEBSITE && project.projectUrl) {
+            window.open(project.projectUrl, '_blank', 'noopener,noreferrer');
+          } else {
+            setViewingProject(project);
+          }
+        };
+
+        const handleUpdateProfile = (newProfile) => { if(isAdminMode && isDbConnected) firebase.database().ref('profile').set(newProfile); };
         
         const handleSaveProject = (projectToSave) => {
-          if(!isAdminMode) return;
-          if (projects.find(p => p.id === projectToSave.id)) { setProjects(projects.map(p => p.id === projectToSave.id ? projectToSave : p)); } 
-          else { setProjects([...projects, { ...projectToSave, id: `p${Date.now()}` }]); }
+          if(!isAdminMode || !isDbConnected) return;
+          const currentProjects = projects || [];
+          const projectIndex = currentProjects.findIndex(p => p.id === projectToSave.id);
+          let newProjects;
+          if (projectIndex > -1) {
+            newProjects = currentProjects.map(p => p.id === projectToSave.id ? projectToSave : p);
+          } else {
+            newProjects = [...currentProjects, { ...projectToSave, id: `p${Date.now()}` }];
+          }
+          firebase.database().ref('projects').set(newProjects);
           setEditingProject(null);
         };
         const handleEditProject = (project) => setEditingProject(project);
         const handleAddProject = () => setEditingProject(emptyProject);
         const handleAddUpcomingProject = () => setEditingProject({...emptyProject, status: ProjectStatus.IN_PROGRESS });
         const handleCloseModal = () => setEditingProject(null);
-        const handleDeleteProject = (id) => { if(isAdminMode && window.confirm('Delete this project?')) { setProjects(projects.filter(p => p.id !== id)); } };
+        const handleDeleteProject = (id) => {
+          if(isAdminMode && isDbConnected && window.confirm('Delete this project?')) {
+            const newProjects = projects.filter(p => p.id !== id);
+            firebase.database().ref('projects').set(newProjects);
+          }
+        };
 
         const handleAddPost = (postData) => {
-          if (!isAdminMode) return;
+          if (!isAdminMode || !isDbConnected) return;
           const newPost = { id: `post${Date.now()}`, ...postData, timestamp: 'Just now', reactions: {}, ...(postData.type === PostType.POLL && { pollVotes: {} }) };
-          setPosts(prev => [newPost, ...prev]);
+          firebase.database().ref('posts').set([newPost, ...(posts || [])]);
         };
-        const handleDeletePost = (postId) => { if (isAdminMode && window.confirm('Are you sure you want to delete this post?')) { setPosts(posts.filter(p => p.id !== postId)); } };
-        const handleReactToPost = (postId, emoji) => { setPosts(posts.map(p => p.id === postId ? {...p, reactions: {...p.reactions, [emoji]: (p.reactions[emoji] || 0) + 1}} : p)); };
+        const handleDeletePost = (postId) => { if (isAdminMode && isDbConnected && window.confirm('Are you sure you want to delete this post?')) { firebase.database().ref('posts').set(posts.filter(p => p.id !== postId)); } };
+        const handleReactToPost = (postId, emoji) => {
+          if (!isDbConnected) return;
+          const newPosts = posts.map(p => p.id === postId ? {...p, reactions: {...p.reactions, [emoji]: (p.reactions[emoji] || 0) + 1}} : p);
+          firebase.database().ref('posts').set(newPosts);
+        };
         const handleVoteOnPoll = (postId, optionId) => {
-          setPosts(posts.map(p => {
+          if (!isDbConnected) return;
+          const newPosts = posts.map(p => {
               if (p.id === postId && p.type === PostType.POLL) { const newVotes = { ...(p.pollVotes || {}) }; newVotes[optionId] = (newVotes[optionId] || 0) + 1; return {...p, pollVotes: newVotes}; }
               return p;
-          }))
+          });
+          firebase.database().ref('posts').set(newPosts);
         };
-        const handleAddComment = (commentText) => { setComments(prev => [...prev, { id: `c${Date.now()}`, author: 'Anonymous Reader', text: commentText, timestamp: 'Just now', reactions: {} }]); };
-        const handleDeleteComment = (id) => { if(isAdminMode) setComments(comments.filter(c => c.id !== id)); };
-        const handleReactToComment = (commentId, emoji) => { setComments(comments.map(c => c.id === commentId ? {...c, reactions: {...c.reactions, [emoji]: (c.reactions[emoji] || 0) + 1}} : c)); };
+        const handleAddComment = (commentText) => {
+          if (!isDbConnected) return;
+          const newComment = { id: `c${Date.now()}`, author: 'Anonymous Reader', text: commentText, timestamp: 'Just now', reactions: {} };
+          firebase.database().ref('comments').set([...(comments || []), newComment]);
+        };
+        const handleDeleteComment = (id) => { if(isAdminMode && isDbConnected) firebase.database().ref('comments').set(comments.filter(c => c.id !== id)); };
+        const handleReactToComment = (commentId, emoji) => {
+          if (!isDbConnected) return;
+          const newComments = comments.map(c => c.id === commentId ? {...c, reactions: {...c.reactions, [emoji]: (c.reactions[emoji] || 0) + 1}} : c);
+          firebase.database().ref('comments').set(newComments);
+        };
         const handleSaveBlogPost = (postToSave) => {
-          if(!isAdminMode) return;
-          if (blogPosts.find(p => p.id === postToSave.id)) { setBlogPosts(blogPosts.map(p => p.id === postToSave.id ? postToSave : p)); } 
-          else { setBlogPosts([{ ...postToSave, id: `blog${Date.now()}`, timestamp: 'Just now' }, ...blogPosts]); }
+          if(!isAdminMode || !isDbConnected) return;
+          const currentPosts = blogPosts || [];
+          const postIndex = currentPosts.findIndex(p => p.id === postToSave.id);
+          let newBlogPosts;
+          if (postIndex > -1) {
+            newBlogPosts = currentPosts.map(p => p.id === postToSave.id ? postToSave : p);
+          } else {
+            newBlogPosts = [{ ...postToSave, id: `blog${Date.now()}`, timestamp: 'Just now' }, ...currentPosts];
+          }
+          firebase.database().ref('blogPosts').set(newBlogPosts);
         };
-        const handleDeleteBlogPost = (id) => { if(isAdminMode && window.confirm('Delete this blog post?')) { setBlogPosts(blogPosts.filter(p => p.id !== id)); } };
-        const handleAddRequest = (text) => { setRequests(prev => [{ id: `req${Date.now()}`, text, timestamp: 'Just now', upvotes: 1 }, ...prev]); };
-        const handleUpvoteRequest = (id) => { setRequests(requests.map(r => r.id === id ? {...r, upvotes: r.upvotes + 1} : r)); };
-        const handleDeleteRequest = (id) => { if(isAdminMode) setRequests(requests.filter(r => r.id !== id)); };
+        const handleDeleteBlogPost = (id) => { if(isAdminMode && isDbConnected && window.confirm('Delete this blog post?')) { firebase.database().ref('blogPosts').set(blogPosts.filter(p => p.id !== id)); } };
         
-        const completedProjects = useMemo(() => projects.filter(p => p.status === ProjectStatus.COMPLETED), [projects]);
-        const upcomingProjects = useMemo(() => projects.filter(p => p.status !== ProjectStatus.COMPLETED).sort((a,b) => (b.progress || 0) - (a.progress || 0)), [projects]);
+        const handleAddRequest = (text) => {
+          if (!isDbConnected) return;
+          const newRequest = { id: `req${Date.now()}`, text, timestamp: 'Just now', upvotes: 1 };
+          firebase.database().ref('requests').set([newRequest, ...(requests || [])]);
+        };
+        const handleUpvoteRequest = (id) => {
+          if (!isDbConnected) return;
+          const newRequests = requests.map(r => r.id === id ? {...r, upvotes: r.upvotes + 1} : r);
+          firebase.database().ref('requests').set(newRequests);
+        };
+        const handleDeleteRequest = (id) => { if(isAdminMode && isDbConnected) firebase.database().ref('requests').set(requests.filter(r => r.id !== id)); };
+        
+        const completedProjects = useMemo(() => (projects || []).filter(p => p.status === ProjectStatus.COMPLETED), [projects]);
+        const upcomingProjects = useMemo(() => (projects || []).filter(p => p.status !== ProjectStatus.COMPLETED).sort((a,b) => (b.progress || 0) - (a.progress || 0)), [projects]);
 
         const ProjectFormModal = ({ project, onSave, onClose }) => {
             const [formData, setFormData] = useState(project || emptyProject);
@@ -941,6 +1080,7 @@
             {showEasterEgg && <EasterEgg onClose={handleCloseEasterEgg} />}
             {showPrivacyPopup && <PrivacyPopup onDismiss={handleDismissPrivacyPopup} />}
             {editingProject && <ProjectFormModal project={editingProject} onSave={handleSaveProject} onClose={handleCloseModal} />}
+            {viewingProject && <ProjectViewerModal project={viewingProject} onClose={() => setViewingProject(null)} />}
             {showLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <form onSubmit={handleLogin} className="sketch-card bg-white p-8 space-y-4 text-center w-80">
@@ -972,7 +1112,7 @@
               <main className="max-w-5xl mx-auto space-y-16">
                 <ProfileSection profile={profile} onUpdateProfile={handleUpdateProfile} isAdmin={isAdminMode} />
                 <WhatsNewSection posts={posts} onAddPost={handleAddPost} onReact={handleReactToPost} onVote={handleVoteOnPoll} onDelete={handleDeletePost} isAdmin={isAdminMode} />
-                <ProjectsSection projects={completedProjects} isAdmin={isAdminMode} onAdd={handleAddProject} onEdit={handleEditProject} onDelete={handleDeleteProject} />
+                <ProjectsSection projects={completedProjects} isAdmin={isAdminMode} onAdd={handleAddProject} onEdit={handleEditProject} onDelete={handleDeleteProject} onView={handleViewProject} />
                 <UpcomingProjects projects={upcomingProjects} isAdmin={isAdminMode} onAdd={handleAddUpcomingProject} onEdit={handleEditProject} onDelete={handleDeleteProject} />
                 <RequestsSection requests={requests} onAddRequest={handleAddRequest} onUpvote={handleUpvoteRequest} onDelete={handleDeleteRequest} isAdmin={isAdminMode}/>
                 <BlogSection posts={blogPosts} onSave={handleSaveBlogPost} onDelete={handleDeleteBlogPost} isAdmin={isAdminMode} authorName={profile.name} />
