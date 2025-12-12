@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Author's Portfolio: A Creative Sketchbook</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&family=Indie+Flower&family=Courier+Prime&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+      @keyframes wiggle {
+        0%, 100% { transform: rotate(-1deg); }
+        50% { transform: rotate(1deg); }
+      }
+      @keyframes writing-animation {
+        0% { transform: translate(-100px, 20px) rotate(-30deg); }
+        20% { transform: translate(-80px, 10px) rotate(-35deg); }
+        40% { transform: translate(-40px, 25px) rotate(-30deg); }
+        60% { transform: translate(0px, 15px) rotate(-35deg); }
+        80% { transform: translate(40px, 22px) rotate(-30deg); }
+        100% { transform: translate(60px, 10px) rotate(-35deg); }
+      }
+      @keyframes sparkle-animation {
+          0%, 100% { transform: scale(0); opacity: 0; }
+          50% { transform: scale(1.2); opacity: 1; }
+      }
+      .animate-wiggle {
+        animation: wiggle 2s ease-in-out infinite;
+      }
+      .animate-writing {
+        animation: writing-animation 2.5s ease-in-out infinite alternate;
+      }
+      .animate-sparkle {
+          --delay: 0s;
+          animation: sparkle-animation 1.5s ease-in-out var(--delay) infinite;
+          top: 50%;
+          left: 40%;
+      }
+      body {
+        font-family: 'Patrick Hand', cursive;
+        background-color: #fdfdfd;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Caveat', cursive;
+      }
+      .font-heading {
+        font-family: 'Caveat', cursive;
+      }
+      .font-body {
+        font-family: 'Patrick Hand', cursive;
+      }
+      .font-alt {
+        font-family: 'Indie Flower', cursive;
+      }
+      .font-typewriter {
+        font-family: 'Courier Prime', monospace;
+      }
+      .sketch-card {
+        border: 2px solid black;
+        box-shadow: 5px 5px 0px black;
+        transition: all 0.2s ease-in-out;
+        border-radius: 8px 4px 10px 5px;
+      }
+      .sketch-card:hover {
+        box-shadow: 8px 8px 0px black;
+        transform: translate(-3px, -3px);
+      }
+      .sketch-button {
+        border: 2px solid black;
+        box-shadow: 3px 3px 0px black;
+        transition: all 0.2s ease-in-out;
+        border-radius: 5px 3px 6px 4px;
+      }
+      .sketch-button:active {
+        box-shadow: 0px 0px 0px black;
+        transform: translate(3px, 3px);
+      }
+       .sketch-input {
+        border: 2px solid black;
+        padding: 8px 12px;
+        background-color: white;
+        transition: box-shadow 0.2s;
+        border-radius: 4px 7px 5px 6px;
+      }
+      .sketch-input:focus {
+        outline: none;
+        box-shadow: 3px 3px 0px black;
+      }
+      .progress-bar-container {
+        border: 2px solid black;
+        padding: 4px;
+        height: 30px;
+      }
+      .progress-bar-fill {
+        background-image: repeating-linear-gradient(
+          -45deg,
+          rgba(0,0,0,1),
+          rgba(0,0,0,1) 10px,
+          rgba(0,0,0,0.8) 10px,
+          rgba(0,0,0,0.8) 20px
+        );
+        height: 100%;
+        transition: width 0.5s ease-in-out;
+      }
+    </style>
+
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel for JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body class="bg-white">
+    <div id="root"></div>
+
+    <!-- All React components and application logic -->
+    <script type="text/babel">
+      const { useState, useMemo, useEffect, useRef } = React;
+
+      // --- From types.ts ---
+      const ProjectType = {
+        WEBSITE: 'Website',
+        IMAGE: 'Image',
+        VIDEO: 'Video',
+        EBOOK: 'eBook',
+        DOCUMENT: 'Document',
+        OTHER: 'Other',
+      };
+      const ProjectStatus = {
+          COMPLETED: 'Completed',
+          IN_PROGRESS: 'In Progress',
+          UPCOMING: 'Upcoming',
+      };
+      const PostType = {
+        TEXT: 'Text',
+        IMAGE: 'Image',
+        VIDEO: 'Video',
+        LINK: 'Link',
+        POLL: 'Poll',
+      };
+      
+      // --- From components/common/Card.tsx ---
+      const Card = ({ children, className = '', as: Component = 'div' }) => {
+        return (
+          <Component className={`sketch-card bg-white p-6 relative ${className}`}>
+            {children}
+          </Component>
+        );
+      };
+      
+      // --- From components/common/SectionHeader.tsx ---
+      const SketchyUnderline = () => (
+        <svg className="w-full h-3" viewBox="0 0 100 5" preserveAspectRatio="none">
+          <path d="M0,3 Q25,1 50,3 T100,2" stroke="black" strokeWidth="2" fill="transparent" strokeLinecap="round" />
+        </svg>
+      );
+      const SectionHeader = ({ title }) => {
+        return (
+          <div className="mb-6">
+            <h2 className="text-4xl md:text-5xl font-heading font-bold">{title}</h2>
+            <SketchyUnderline />
+          </div>
+        );
+      };
+      
+      // --- From components/BackgroundSketches.tsx ---
+      const BackgroundSketches = () => {
+          return (
+              <div className="fixed inset-0 z-[-1] opacity-20 text-gray-400 pointer-events-none hidden lg:block" aria-hidden="true">
+                  <svg className="absolute top-0 left-0" width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M-10 50C20 -20 100 20 120 50S180 150 150 180" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                      <circle cx="150" cy="50" r="30" stroke="currentColor" strokeWidth="4"/>
+                  </svg>
+                  <svg className="absolute bottom-0 right-0" width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M260 200C230 270 150 230 130 200S70 100 100 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                      <path d="M100 200L150 150" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                      <path d="M50 150L100 100" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                  </svg>
+              </div>
+          )
+      };
+
+      // --- From components/EasterEgg.tsx ---
+      const FountainPenIcon = ({ className }) => (
+          <svg className={className} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M54.3431 9.65685C50.4379 5.75161 44.1062 5.75161 40.201 9.65685L12.9289 36.9289C11.3668 38.491 10.7426 40.6653 11.2193 42.7279L12.9896 51.579C13.4663 53.6416 15.2416 55.2416 17.3023 55.5451L26.495 56.7847C28.5576 57.0882 30.7319 56.464 32.294 54.9019L59.5661 27.6298C63.4713 23.7246 63.4713 17.3929 59.5661 13.5877L54.3431 9.65685Z" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M38.1213 11.7373L52.2635 25.8794" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12.9289 36.9289L27.0711 51.0711" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+      );
+      const Sparkle = ({ className }) => (
+          <svg className={`absolute ${className}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"/>
+          </svg>
+      );
+      const EasterEgg = ({ onClose }) => {
+          return (
+              <div 
+                  className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 cursor-pointer"
+                  onClick={onClose}
+                  aria-modal="true"
+                  role="dialog"
+              >
+                  <div 
+                      className="sketch-card bg-white p-8 space-y-4 text-center max-w-lg w-full relative overflow-hidden"
+                      onClick={(e) => e.stopPropagation()}
+                  >
+                      <div className="relative h-24">
+                         <FountainPenIcon className="w-24 h-24 absolute left-1/2 -translate-x-1/2 animate-writing"/>
+                         <Sparkle className="text-yellow-400 w-6 h-6 animate-sparkle" style={{'--delay': '0.5s'}} />
+                         <Sparkle className="text-yellow-400 w-4 h-4 animate-sparkle" style={{'--delay': '0.8s'}} />
+                         <Sparkle className="text-yellow-400 w-5 h-5 animate-sparkle" style={{'--delay': '1.2s'}} />
+                      </div>
+                      <h2 className="text-4xl font-heading text-gray-800">
+                          Every great story starts with a single word.
+                      </h2>
+                      <p className="font-alt text-2xl">
+                          Keep writing yours...
+                      </p>
+                      <button 
+                          onClick={onClose} 
+                          className="sketch-button bg-gray-200 px-6 py-2 text-lg mt-4"
+                      >
+                          Close
+                      </button>
+                  </div>
+              </div>
+          );
+      };
+
+      // --- From components/PrivacyPopup.tsx ---
+      const PrivacyPopup = ({ onDismiss }) => {
+          return (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+                  <div className="sketch-card bg-white p-8 space-y-4 text-center max-w-md w-full">
+                      <h2 className="text-3xl font-heading">You're Browsing Anonymously!</h2>
+                      <p className="text-lg text-gray-800">
+                          Welcome! Just so you know, your visit is completely anonymous. We don't collect or store any of your personal data. 
+                          Feel free to explore, comment, and share ideas without leaving a trace.
+                      </p>
+                      <p className="font-alt text-xl">Happy creating!</p>
+                      <button 
+                          onClick={onDismiss} 
+                          className="sketch-button bg-green-300 px-6 py-2 text-lg"
+                      >
+                          Got it!
+                      </button>
+                  </div>
+              </div>
+          );
+      };
+      
+      // --- From components/ProfileSection.tsx ---
+      const VerifiedBadge = () => ( <svg className="w-6 h-6 inline-block text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.121 7.293a1 1 0 010 1.414l-4.5 4.5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 111.414-1.414L9.5 11.086l3.793-3.793a1 1 0 011.414 0z" /></svg> );
+      const LocationIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> );
+      const CompanyIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 21h-20v-16h20v16zm-10-12h-6v2h6v-2zm-6 4h6v2h-6v-2zm-2-8v-3h12v3h-12z" /></svg> );
+      const EditIcon = ({className}) => ( <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+      const GithubIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>);
+      const LinkedinIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>);
+      const TwitterIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Twitter</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.223.085a4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>);
+      const PatreonIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M15.219.015c-4.433 0-8.035 3.602-8.035 8.035s3.602 8.035 8.035 8.035 8.035-3.602 8.035-8.035S19.652.015 15.219.015zm-9.035 2.55h-3.6v18.88h3.6V2.565z"/></svg>);
+      const ProfileSection = ({ profile, onUpdateProfile, isAdmin }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [editableProfile, setEditableProfile] = useState(profile);
+        useEffect(() => { setEditableProfile(profile); }, [profile]);
+        useEffect(() => { if (!isAdmin) { setIsEditing(false); } }, [isAdmin]);
+        const handleSave = () => { onUpdateProfile(editableProfile); setIsEditing(false); };
+        const handleCancel = () => { setEditableProfile(profile); setIsEditing(false); }
+        const handleImageUpload = (e) => {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (loadEvent) => {
+              setEditableProfile(prev => ({...prev, avatarUrl: loadEvent.target?.result}));
+            };
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        };
+        const handleChange = (e) => {
+          const {name, value} = e.target;
+          const keys = name.split('.');
+          if (keys.length > 1) {
+              setEditableProfile(prev => ({...prev, [keys[0]]: {...prev[keys[0]], [keys[1]]: value}}));
+          } else {
+              setEditableProfile(prev => ({...prev, [name]: value}));
+          }
+        }
+        return (
+          <Card>
+             {isAdmin && !isEditing && ( <button onClick={() => setIsEditing(true)} className="sketch-button absolute top-4 right-4 bg-yellow-200 p-2 z-10 animate-wiggle"><EditIcon /></button> )}
+            <div className="flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                  <img src={editableProfile.avatarUrl} alt={profile.name} className="w-32 h-32 rounded-full border-2 border-black p-1 shadow-md" />
+                  {isEditing && (
+                    <div className="mt-2">
+                      <label htmlFor="avatarUpload" className="sketch-button bg-gray-200 text-sm py-1 px-3 cursor-pointer"> Upload Photo </label>
+                      <input type="file" id="avatarUpload" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    </div>
+                  )}
+              </div>
+              {isEditing ? <input type="text" name="name" value={editableProfile.name} onChange={handleChange} className="sketch-input text-3xl font-heading font-bold text-center w-full"/> : <h1 className="text-3xl font-heading font-bold flex items-center gap-2">{profile.name} {profile.isVerified && <VerifiedBadge />}</h1>}
+              {isEditing ? <input type="text" name="expertise" value={editableProfile.expertise} onChange={handleChange} className="sketch-input text-lg text-gray-700 text-center w-full mt-1"/> : <p className="text-lg text-gray-700">{profile.expertise}</p>}
+              {isEditing ? (
+                  <div className="text-left w-full mt-4 space-y-2 text-sm">
+                      <h4 className="font-heading font-bold text-lg mb-1">Edit Social Links</h4>
+                      <div className="flex items-center gap-2"><GithubIcon /> <input type="text" name="socials.github" value={editableProfile.socials.github || ''} onChange={handleChange} placeholder="GitHub URL" className="sketch-input w-full" /></div>
+                      <div className="flex items-center gap-2"><LinkedinIcon /> <input type="text" name="socials.linkedin" value={editableProfile.socials.linkedin || ''} onChange={handleChange} placeholder="LinkedIn URL" className="sketch-input w-full" /></div>
+                      <div className="flex items-center gap-2"><TwitterIcon /> <input type="text" name="socials.twitter" value={editableProfile.socials.twitter || ''} onChange={handleChange} placeholder="Twitter URL" className="sketch-input w-full" /></div>
+                      <div className="flex items-center gap-2"><PatreonIcon /> <input type="text" name="patreonUrl" value={editableProfile.patreonUrl || ''} onChange={handleChange} placeholder="Patreon URL" className="sketch-input w-full" /></div>
+                  </div>
+              ) : (
+                  <div className="flex justify-center gap-4 my-4">
+                      {profile.socials.github && <a href={profile.socials.github} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors"><GithubIcon/></a>}
+                      {profile.socials.linkedin && <a href={profile.socials.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors"><LinkedinIcon/></a>}
+                      {profile.socials.twitter && <a href={profile.socials.twitter} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors"><TwitterIcon/></a>}
+                  </div>
+              )}
+              <div className="text-left w-full mt-2 space-y-2 text-md">
+                  <div className="flex items-center"><LocationIcon /> {isEditing ? <input type="text" name="location" value={editableProfile.location} onChange={handleChange} className="sketch-input w-full"/> : profile.location}</div>
+                  <div className="flex items-center"><CompanyIcon /> {isEditing ? <input type="text" name="company.name" value={editableProfile.company.name} onChange={handleChange} className="sketch-input w-full"/> : `Works at ${profile.company.name}`}</div>
+              </div>
+              <div className="w-full border-t-2 border-dashed border-black my-6"></div>
+              <div className="text-left w-full">
+                  <h3 className="text-2xl font-heading font-bold mb-2">About me</h3>
+                  {isEditing ? ( <textarea name="bio" value={editableProfile.bio} onChange={handleChange} className="w-full sketch-input h-40 resize-none" /> ) : ( <p className="text-gray-800 whitespace-pre-wrap">{profile.bio}</p> )}
+              </div>
+              {isEditing && ( <div className="flex gap-2 mt-4"><button onClick={handleSave} className="sketch-button bg-green-300 px-4 py-1 text-sm">Save</button><button onClick={handleCancel} className="sketch-button bg-gray-200 px-4 py-1 text-sm">Cancel</button></div> )}
+            </div>
+          </Card>
+        );
+      };
+      
+      // --- From components/ProjectsSection.tsx ---
+      const ProjectsSection = ({ projects, isAdmin, onSave, onDelete }) => {
+        const EditIcon = ({className}) => ( <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+        const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> );
+        
+        const emptyProject = { title: '', description: '', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/400/300', projectUrl: '', tags: [], progress: 0 };
+        
+        const ProjectFormModal = ({ project, onSave, onClose }) => {
+            const [formData, setFormData] = useState(project || emptyProject);
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                if(name === 'tags') {
+                    setFormData(prev => ({ ...prev, tags: value.split(',').map(t => t.trim()) }));
+                } else {
+                    setFormData(prev => ({...prev, [name]: value }));
+                }
+            };
+            const handleSubmit = (e) => { e.preventDefault(); onSave(formData); onClose(); };
+            if (!project) return null;
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <form onSubmit={handleSubmit} className="sketch-card bg-white p-6 space-y-3 w-full max-w-lg max-h-full overflow-y-auto">
+                        <h2 className="text-3xl font-heading">{'id' in project ? 'Edit' : 'Add'} Project</h2>
+                        <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="sketch-input w-full"/>
+                        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="sketch-input w-full h-24"/>
+                        <input name="mediaUrl" value={formData.mediaUrl} onChange={handleChange} placeholder="Media URL (Image/Video)" className="sketch-input w-full"/>
+                        <input name="projectUrl" value={formData.projectUrl} onChange={handleChange} placeholder="Project URL (Live site)" className="sketch-input w-full"/>
+                        <input name="tags" value={formData.tags.join(', ')} onChange={handleChange} placeholder="Tags (comma, separated)" className="sketch-input w-full"/>
+                        <div className="grid grid-cols-2 gap-4">
+                            <select name="type" value={formData.type} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectType).map(type => <option key={type} value={type}>{type}</option>)}</select>
+                            <select name="status" value={formData.status} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectStatus).map(status => <option key={status} value={status}>{status}</option>)}</select>
+                        </div>
+                         {formData.status !== ProjectStatus.COMPLETED && <input type="range" name="progress" min="0" max="100" value={formData.progress} onChange={handleChange} className="w-full"/>}
+                        <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Save</button><button type="button" onClick={onClose} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
+                    </form>
+                </div>
+            );
+        };
+        const ProjectCard = ({ project, isAdmin, onEdit, onDelete }) => {
+            return (
+                <Card className="flex flex-col h-full group">
+                    {isAdmin && ( <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => onEdit(project)} className="sketch-button bg-yellow-200 p-2"><EditIcon className="w-4 h-4"/></button><button onClick={() => onDelete(project.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon className="w-4 h-4"/></button></div> )}
+                    <div className="aspect-[4/3] bg-gray-100 border-2 border-black mb-4"><img src={project.mediaUrl} alt={project.title} className="w-full h-full object-cover" /></div>
+                    <div className="flex-grow flex flex-col">
+                        <span className="text-sm bg-black text-white px-2 py-0.5 self-start font-alt mb-2">{project.type}</span>
+                        <h3 className="text-2xl font-heading font-bold">{project.title}</h3>
+                        <p className="text-gray-700 flex-grow mt-1">{project.description}</p>
+                        <div className="mt-4 flex flex-wrap gap-2">{project.tags.map(tag => ( <span key={tag} className="text-xs bg-gray-200 border border-black px-2 py-1">{tag}</span> ))}</div>
+                    </div>
+                    {project.projectUrl && ( <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="sketch-button bg-blue-300 mt-4 text-center py-2">View Project</a> )}
+                </Card>
+            );
+        };
+        const [filter, setFilter] = useState('All');
+        const [editingProject, setEditingProject] = useState(null);
+        useEffect(() => { if (!isAdmin) { setEditingProject(null); } }, [isAdmin]);
+        const projectTypes = ['All', ...Object.values(ProjectType)];
+        const filteredProjects = filter === 'All' ? projects : projects.filter(p => p.type === filter);
+        const handleAdd = () => setEditingProject(emptyProject);
+        const handleEdit = (project) => setEditingProject(project);
+        return (
+          <section>
+              {editingProject && <ProjectFormModal project={editingProject} onSave={onSave} onClose={() => setEditingProject(null)} />}
+            <div className="flex justify-between items-start">
+              <SectionHeader title="My Projects" />
+              {isAdmin && <button onClick={handleAdd} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon/> Add Project</button>}
+            </div>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {projectTypes.map(type => ( <button key={type} onClick={() => setFilter(type)} className={`sketch-button px-4 py-1 text-sm ${filter === type ? 'bg-yellow-300' : 'bg-white'}`}>{type}</button>))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {filteredProjects.map(project => ( <ProjectCard key={project.id} project={project} isAdmin={isAdmin} onEdit={handleEdit} onDelete={onDelete} /> ))}
+              {filteredProjects.length === 0 && <p className="font-alt text-gray-500">No projects of this type yet. Scribble some up!</p>}
+            </div>
+          </section>
+        );
+      };
+
+      // --- From components/UpcomingProjects.tsx ---
+      const UpcomingProjects = ({ projects }) => {
+        const ProgressBar = ({ progress }) => {
+          return (
+            <div className="w-full progress-bar-container bg-white mt-2">
+              <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+            </div>
+          );
+        };
+        const UpcomingProjectCard = ({ project }) => {
+          return (
+            <div className="border-b-2 border-dashed border-black py-4 last:border-b-0">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className="text-2xl font-heading font-bold">{project.title}</h3>
+                        <p className="text-gray-600 text-sm">{project.status}</p>
+                    </div>
+                    <span className="font-alt text-2xl font-bold">{project.progress ?? 0}%</span>
+                </div>
+                <ProgressBar progress={project.progress ?? 0} />
+            </div>
+          )
+        }
+        if (projects.length === 0) return null;
+        return (
+          <section>
+            <SectionHeader title="What's Next?" />
+            <Card>
+              <div className="space-y-4">
+                {projects.map(project => ( <UpcomingProjectCard key={project.id} project={project} /> ))}
+              </div>
+            </Card>
+          </section>
+        );
+      };
+
+      // --- From components/DiscussionSection.tsx ---
+      const DiscussionSection = ({ comments, onAddComment, onReact, onDelete, isAdmin }) => {
+        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+        const COMMENT_REACTIONS = ['👍', '❤️', '😂', '🤔'];
+        const CommentCard = ({ comment, onReact, onDelete, isAdmin }) => {
+          return (
+            <div className="flex gap-3 group">
+              <div className="w-12 h-12 rounded-full bg-gray-200 border-2 border-black flex-shrink-0 flex items-center justify-center font-bold text-xl font-heading">{comment.author.charAt(0)}</div>
+              <div className="flex-grow">
+                <div className="sketch-card bg-gray-100 p-3 shadow-none hover:shadow-none" style={{borderRadius: '1.5rem 1.5rem 1.5rem 0.25rem'}}>
+                  <div className="flex items-baseline gap-3"><h4 className="font-bold text-lg font-alt">{comment.author}</h4><span className="text-xs text-gray-500">{comment.timestamp}</span></div>
+                  <p className="text-gray-800">{comment.text}</p>
+                </div>
+                <div className="mt-1 flex items-center gap-1">
+                    {COMMENT_REACTIONS.map(emoji => ( <button key={emoji} onClick={() => onReact(comment.id, emoji)} className="sketch-button bg-white px-2 py-0 text-sm">{emoji} <span className="font-body text-xs ml-1">{comment.reactions[emoji] || 0}</span></button> ))}
+                    {isAdmin && <button onClick={() => onDelete(comment.id)} className="sketch-button bg-red-300 p-1 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"><DeleteIcon /></button>}
+                </div>
+              </div>
+            </div>
+          );
+        }
+        const [newComment, setNewComment] = useState('');
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (newComment.trim()) {
+            onAddComment(newComment.trim());
+            setNewComment('');
+          }
+        };
+        return (
+          <section>
+            <SectionHeader title="Discussion Board" />
+            <Card>
+              <div className="space-y-6 mb-8">
+                  {comments.length > 0 ? comments.map(comment => ( <CommentCard key={comment.id} comment={comment} onReact={onReact} onDelete={onDelete} isAdmin={isAdmin} /> )) : <p className="font-alt text-gray-500 text-center py-4">No comments yet. Be the first to start a conversation!</p>}
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                  <h3 className="text-xl font-heading font-bold">Join the conversation</h3>
+                  <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Share your thoughts..." className="w-full sketch-input h-24 resize-none" />
+                  <button type="submit" className="sketch-button bg-green-300 px-6 py-2">Post Comment</button>
+              </form>
+            </Card>
+          </section>
+        );
+      };
+
+      // --- From components/ContactSection.tsx ---
+      const ContactSection = ({ email }) => {
+          const MailIcon = () => ( <svg className="w-6 h-6 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> );
+          return (
+              <section>
+                  <SectionHeader title="Contact the Author" />
+                  <Card className="text-center">
+                      <p className="text-lg mb-4">Have a question or a project idea? I'd love to hear from you!</p>
+                      <a href={`mailto:${email}`} className="sketch-button bg-blue-300 px-8 py-3 text-xl inline-flex items-center"><MailIcon /> Send a Message</a>
+                  </Card>
+              </section>
+          );
+      };
+
+      // --- From components/WhatsNewSection.tsx ---
+      const WhatsNewSection = ({ posts, isAdmin, onAddPost, onReact, onVote }) => {
+        const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
+        const REACTIONS = ['👍', '❤️', '🎉', '👀'];
+        
+        const PostForm = ({ onSave, onCancel }) => {
+            const [type, setType] = useState(PostType.TEXT);
+            const [title, setTitle] = useState('');
+            const [content, setContent] = useState('');
+            const [mediaUrl, setMediaUrl] = useState('');
+            const [linkUrl, setLinkUrl] = useState('');
+            const [pollOptions, setPollOptions] = useState(['', '']);
+            const handlePollOptionChange = (index, value) => { const newOptions = [...pollOptions]; newOptions[index] = value; setPollOptions(newOptions); };
+            const addPollOption = () => setPollOptions([...pollOptions, '']);
+            const removePollOption = (index) => setPollOptions(pollOptions.filter((_, i) => i !== index));
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!title.trim()) return;
+                let postData = { type, title, content };
+                if (type === PostType.IMAGE || type === PostType.VIDEO) postData.mediaUrl = mediaUrl;
+                if (type === PostType.LINK) postData.linkUrl = linkUrl;
+                if (type === PostType.POLL) { postData.pollOptions = pollOptions.filter(opt => opt.trim()).map((opt, i) => ({ id: `opt${i+1}`, text: opt })); }
+                onSave(postData);
+            };
+            return (
+                <Card className="mb-8 bg-yellow-50">
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                        <h3 className="text-2xl font-heading">New Update</h3>
+                        <div className="flex flex-wrap gap-2 text-sm">
+                            {Object.values(PostType).map(pt => (<label key={pt} className={`sketch-button px-3 py-1 cursor-pointer ${type === pt ? 'bg-yellow-300' : 'bg-white'}`}><input type="radio" name="postType" value={pt} checked={type === pt} onChange={() => setType(pt)} className="sr-only"/>{pt}</label>))}
+                        </div>
+                        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post Title" className="sketch-input w-full" />
+                        {type === PostType.TEXT && <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="What's new?" className="sketch-input w-full h-28" />}
+                        {(type === PostType.IMAGE || type === PostType.VIDEO) && <input value={mediaUrl} onChange={(e) => setMediaUrl(e.target.value)} placeholder={type === PostType.IMAGE ? "Image URL" : "YouTube Video URL"} className="sketch-input w-full" />}
+                        {type === PostType.LINK && <input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="Link URL" className="sketch-input w-full" />}
+                        {(type === PostType.IMAGE || type === PostType.VIDEO || type === PostType.LINK) && <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Caption (optional)" className="sketch-input w-full h-16" />}
+                        {type === PostType.POLL && (<div className="space-y-2">
+                             <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Poll question/description" className="sketch-input w-full h-16" />
+                            {pollOptions.map((opt, i) => ( <div key={i} className="flex items-center gap-2"><input value={opt} onChange={(e) => handlePollOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} className="sketch-input w-full" />{pollOptions.length > 2 && <button type="button" onClick={() => removePollOption(i)} className="sketch-button bg-red-200 px-2 text-xs">X</button>}</div> ))}
+                            <button type="button" onClick={addPollOption} className="sketch-button bg-gray-200 text-sm px-3 py-1">Add Option</button>
+                        </div>)}
+                        <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Post</button><button type="button" onClick={onCancel} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
+                    </form>
+                </Card>
+            );
+        };
+        const getYoutubeEmbedUrl = (url) => {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+        }
+        const PostCard = ({ post, onReact, onVote }) => {
+            const embedUrl = post.type === PostType.VIDEO ? getYoutubeEmbedUrl(post.mediaUrl || '') : null;
+            const totalVotes = post.type === PostType.POLL && post.pollVotes ? Object.values(post.pollVotes).reduce((sum, count) => sum + Number(count), 0) : 0;
+            return (
+              <div className="border-b-2 border-dashed border-black py-6 last:border-b-0">
+                  <span className="text-xs text-gray-500 font-alt">{post.timestamp}</span>
+                  <h3 className="text-3xl font-heading font-bold mt-1">{post.title}</h3>
+                  <p className="text-gray-800 mt-2 whitespace-pre-wrap">{post.content}</p>
+                  {post.type === PostType.IMAGE && post.mediaUrl && <img src={post.mediaUrl} alt={post.title} className="mt-4 border-2 border-black w-full md:max-w-lg" />}
+                  {post.type === PostType.VIDEO && embedUrl && <div className="aspect-video mt-4 w-full md:max-w-lg"><iframe src={embedUrl} title={post.title} className="w-full h-full border-2 border-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
+                  {post.type === PostType.LINK && post.linkUrl && <a href={post.linkUrl} target="_blank" rel="noopener noreferrer" className="sketch-button bg-blue-200 mt-4 block text-center py-2 truncate">Visit Link: {post.linkUrl}</a>}
+                  {post.type === PostType.POLL && post.pollOptions && (
+                      <div className="mt-4 space-y-2">
+                          {post.pollOptions.map(opt => {
+                              const votes = post.pollVotes?.[opt.id] || 0;
+                              const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+                              return (
+                              <div key={opt.id}>
+                                   <div className="flex justify-between items-baseline text-sm mb-1"><span>{opt.text}</span><span className="font-alt">{votes} vote{votes !== 1 && 's'}</span></div>
+                                  <div className="flex items-center gap-2">
+                                      <div className="w-full progress-bar-container bg-gray-200 !h-8"><div className="progress-bar-fill !bg-yellow-400" style={{ width: `${percentage}%` }}></div></div>
+                                      <button onClick={() => onVote(post.id, opt.id)} className="sketch-button bg-yellow-200 px-3 py-1 text-sm">Vote</button>
+                                  </div>
+                              </div>
+                          )})}
+                      </div>
+                  )}
+                  <div className="mt-4 flex items-center gap-2">
+                      {REACTIONS.map(emoji => ( <button key={emoji} onClick={() => onReact(post.id, emoji)} className="sketch-button bg-white px-3 py-1 text-lg">{emoji} <span className="text-sm font-body ml-1">{post.reactions[emoji] || 0}</span></button> ))}
+                  </div>
+              </div>
+            )
+        };
+        const [isAdding, setIsAdding] = useState(false);
+        useEffect(() => { if (!isAdmin) setIsAdding(false); }, [isAdmin]);
+        const handleSavePost = (postData) => { onAddPost(postData); setIsAdding(false); }
+        return (
+            <section>
+                <div className="flex justify-between items-start">
+                    <SectionHeader title="What's New?" />
+                    {isAdmin && !isAdding && ( <button onClick={() => setIsAdding(true)} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon /> New Post</button> )}
+                </div>
+                {isAdmin && isAdding && <PostForm onSave={handleSavePost} onCancel={() => setIsAdding(false)} />}
+                <Card>
+                    {posts.length > 0 ? ( posts.map(post => <PostCard key={post.id} post={post} onReact={onReact} onVote={onVote} />) ) : ( <p className="font-alt text-gray-500 text-center py-4">No updates yet. Check back soon!</p> )}
+                </Card>
+            </section>
+        );
+      }
+
+      // --- From components/PatreonSection.tsx ---
+      const PatreonSection = ({ url }) => {
+          const PatreonIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6 inline-block mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M15.219.015c-4.433 0-8.035 3.602-8.035 8.035s3.602 8.035 8.035 8.035 8.035-3.602 8.035-8.035S19.652.015 15.219.015zm-9.035 2.55h-3.6v18.88h3.6V2.565z"/></svg> );
+          return (
+              <section>
+                  <SectionHeader title="Become a Patron" />
+                  <Card className="text-center bg-orange-100">
+                      <p className="text-lg mb-4">If you enjoy my work, consider supporting me on Patreon! You'll get access to exclusive content, behind-the-scenes updates, and more.</p>
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="sketch-button bg-orange-400 px-8 py-3 text-xl inline-flex items-center"><PatreonIcon /> Support me on Patreon</a>
+                  </Card>
+              </section>
+          );
+      };
+
+      // --- From components/BlogSection.tsx ---
+      const BlogSection = ({ posts, isAdmin, onSave, onDelete, authorName }) => {
+          const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
+          const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>);
+          const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
+          const PaperclipIcon = ({ className }) => ( <svg className={`absolute ${className}`} width="30" height="80" viewBox="0 0 30 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 78C15 78 28 65 28 45C28 25 15 2 15 2C15 2 2 18 2 38C2 58 15 78 15 78Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 65C15 65 21 56 21 45C21 34 15 15 15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg> );
+          const emptyPost = { title: '', content: '', tags: [] };
+
+          const BlogPostForm = ({ post, onSave, onCancel }) => {
+              const [formData, setFormData] = useState(post);
+              const handleChange = (e) => {
+                  const { name, value } = e.target;
+                  if (name === 'tags') { setFormData(prev => ({...prev, tags: value.split(',').map(t => t.trim()) })); } else { setFormData(prev => ({...prev, [name]: value})); }
+              }
+              const handleSubmit = (e) => { e.preventDefault(); if(formData.title.trim() && formData.content.trim()) { onSave(formData); } }
+              return (
+                  <Card className="my-8 bg-blue-50">
+                      <form onSubmit={handleSubmit} className="space-y-3">
+                          <h3 className="text-2xl font-heading">{'id' in formData ? 'Edit' : 'New'} Blog Post</h3>
+                          <input name="title" value={formData.title} onChange={handleChange} placeholder="Blog Title" className="sketch-input w-full font-typewriter" />
+                          <textarea name="content" value={formData.content} onChange={handleChange} placeholder="Start writing your story..." className="sketch-input w-full h-64 font-typewriter" />
+                          <input name="tags" value={formData.tags.join(', ')} onChange={handleChange} placeholder="Tags (comma, separated)" className="sketch-input w-full font-typewriter"/>
+                          <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Save Post</button><button type="button" onClick={onCancel} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
+                      </form>
+                  </Card>
+              )
+          }
+          const BlogPostCard = ({ post, isAdmin, onEdit, onDelete, authorName }) => {
+              const [isExpanded, setIsExpanded] = useState(false);
+              return (
+                  <div className="relative border-b-2 border-dashed border-black py-6 pl-4 last:border-b-0 font-typewriter">
+                      <PaperclipIcon className="top-4 -left-2 text-gray-400" />
+                      <div className="pl-8">
+                          <div className="flex justify-between items-start">
+                              <div className="text-sm text-gray-700 space-y-1"><p><span className="font-bold">FROM:</span> {authorName}</p><p><span className="font-bold">DATE:</span> {post.timestamp}</p></div>
+                              {isAdmin && <div className="flex gap-2"><button onClick={() => onEdit(post)} className="sketch-button bg-yellow-200 p-2"><EditIcon /></button><button onClick={() => onDelete(post.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon /></button></div>}
+                          </div>
+                          <div className="mt-2 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                              <h3 className="text-xl font-bold flex items-baseline"><span className="font-bold mr-2">SUBJECT:</span> <span className="font-heading text-3xl">{post.title}</span></h3>
+                              <div className="border-t-2 border-dashed border-black my-4"></div>
+                              {isExpanded ? ( <p className="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">{post.content}</p> ) : ( <p className="text-gray-600 whitespace-pre-wrap text-lg leading-relaxed">{post.content.split('\n\n')[0]}<span className="text-blue-600 font-bold ml-2">(Click to read more)</span></p> )}
+                          </div>
+                          {isExpanded && post.tags.length > 0 && (
+                              <div className="mt-4 flex flex-wrap gap-2 items-center">
+                                  <span className="font-bold text-sm">KEYWORDS:</span>
+                                  {post.tags.map(tag => ( <span key={tag} className="text-sm bg-gray-200 border border-black px-2 py-0.5">#{tag}</span>))}
+                              </div>
+                          )}
+                      </div>
+                  </div>
+              )
+          }
+          const [editingPost, setEditingPost] = useState(null);
+          useEffect(() => { if (!isAdmin) setEditingPost(null); }, [isAdmin]);
+          const handleSave = (post) => { onSave(post); setEditingPost(null); };
+          return (
+              <section>
+                  <div className="flex justify-between items-start">
+                      <SectionHeader title="From the Blog" />
+                      {isAdmin && !editingPost && <button onClick={() => setEditingPost(emptyPost)} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon /> New Post</button>}
+                  </div>
+                  {isAdmin && editingPost && <BlogPostForm post={editingPost} onSave={handleSave} onCancel={() => setEditingPost(null)} />}
+                  <Card className="bg-amber-50">
+                      {posts.length > 0 ? ( posts.map(post => <BlogPostCard key={post.id} post={post} isAdmin={isAdmin} onEdit={setEditingPost} onDelete={onDelete} authorName={authorName} />) ) : ( <p className="font-alt text-gray-500 text-center py-4">No blog posts yet. Stay tuned!</p> )}
+                  </Card>
+              </section>
+          );
+      };
+
+      // --- From components/RequestsSection.tsx ---
+      const RequestsSection = ({ requests, isAdmin, onAddRequest, onUpvote, onDelete }) => {
+          const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
+          const UpvoteIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>);
+          const RequestCard = ({ request, onUpvote, onDelete, isAdmin }) => {
+              return (
+                  <div className="flex items-start gap-4 p-4 border-b-2 border-dashed border-black last:border-b-0 group">
+                      <button onClick={() => onUpvote(request.id)} className="flex flex-col items-center sketch-button bg-gray-100 p-2 text-center">
+                          <UpvoteIcon />
+                          <span className="font-bold text-lg">{request.upvotes}</span>
+                      </button>
+                      <div className="flex-grow">
+                          <p className="text-gray-800 text-lg">{request.text}</p>
+                          <span className="text-xs text-gray-500 font-alt">{request.timestamp} by an anonymous user</span>
+                      </div>
+                      {isAdmin && <button onClick={() => onDelete(request.id)} className="sketch-button bg-red-300 p-2 opacity-0 group-hover:opacity-100 transition-opacity"><DeleteIcon /></button>}
+                  </div>
+              )
+          };
+          const [newRequest, setNewRequest] = useState('');
+          const handleSubmit = (e) => {
+              e.preventDefault();
+              if (newRequest.trim()) {
+                  onAddRequest(newRequest.trim());
+                  setNewRequest('');
+              }
+          };
+          return (
+              <section>
+                  <SectionHeader title="Requests & Ideas" />
+                   <Card className="space-y-6">
+                      <div className="bg-yellow-50 p-4 border-2 border-black">
+                           <h3 className="text-xl font-heading font-bold">Have an idea?</h3>
+                          <p className="text-sm mb-2 text-gray-600">Ask a question, request a feature, or post a trend hashtag. All submissions are anonymous!</p>
+                          <form onSubmit={handleSubmit} className="flex items-stretch gap-2">
+                              <input value={newRequest} onChange={(e) => setNewRequest(e.target.value)} placeholder="What's on your mind?..." className="sketch-input w-full"/>
+                              <button type="submit" className="sketch-button bg-green-300 px-4">Submit</button>
+                          </form>
+                      </div>
+                      <div>
+                          {requests.length > 0 ? ( requests.map(req => <RequestCard key={req.id} request={req} onUpvote={onUpvote} onDelete={onDelete} isAdmin={isAdmin} />) ) : ( <p className="font-alt text-gray-500 text-center py-4">No requests yet. Be the first to share an idea!</p> )}
+                      </div>
+                  </Card>
+              </section>
+          );
+      };
+
+
+      // --- From App.tsx ---
+      const App = () => {
+        const ADMIN_PASSWORD = 'emergent';
+        const ADMIN_USERNAME = 'seri.wrts';
+
+        const [isAdminMode, setIsAdminMode] = useState(false);
+        const [usernameInput, setUsernameInput] = useState('');
+        const [passwordInput, setPasswordInput] = useState('');
+        const [showLogin, setShowLogin] = useState(false);
+        const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
+        const [showEasterEgg, setShowEasterEgg] = useState(false);
+
+        const keySequence = useRef('');
+        const sequenceTimeout = useRef(null);
+
+        useEffect(() => {
+          const handleKeyDown = (e) => {
+              if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) { return; }
+              if (sequenceTimeout.current) { clearTimeout(sequenceTimeout.current); }
+              keySequence.current += e.key.toLowerCase();
+              if (keySequence.current.length > 5) { keySequence.current = keySequence.current.slice(-5); }
+              if (keySequence.current === 'story') { setShowEasterEgg(true); keySequence.current = ''; }
+              sequenceTimeout.current = window.setTimeout(() => { keySequence.current = ''; }, 1500);
+          };
+          window.addEventListener('keydown', handleKeyDown);
+          return () => {
+              window.removeEventListener('keydown', handleKeyDown);
+              if (sequenceTimeout.current) { clearTimeout(sequenceTimeout.current); }
+          };
+        }, []);
+
+        const handleCloseEasterEgg = () => setShowEasterEgg(false);
+
+        useEffect(() => {
+          const hasSeenPrivacyPopup = localStorage.getItem('hasSeenPrivacyPopup');
+          if (!hasSeenPrivacyPopup) { setShowPrivacyPopup(true); }
+        }, []);
+        const handleDismissPrivacyPopup = () => { localStorage.setItem('hasSeenPrivacyPopup', 'true'); setShowPrivacyPopup(false); };
+        
+        const [profile, setProfile] = useState({
+          name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
+          expertise: "Creative Developer & Storyteller", location: "Sketchburg, ART",
+          company: { name: "Inkwell Studios", url: "#" },
+          bio: "I turn ideas into interactive, hand-drawn experiences. With a passion for unique UIs and a love for all things sketched, I build web applications that don't just work well, but also have a personality. This whole portfolio is a testament to that philosophy!",
+          socials: { linkedin: '#', github: '#', twitter: '#' },
+          email: 'hello@alexsketch.com', patreonUrl: 'https://www.patreon.com/alexsketcherman',
+        });
+        const [projects, setProjects] = useState([
+          { id: '1', title: 'Interactive Storybook', description: 'A web-based storybook with animated sketches and clickable elements.', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/storybook/400/300', projectUrl: '#', tags: ['React', 'Animation', 'UI/UX'] },
+          { id: '2', title: 'Character Sketches', description: 'A collection of character designs for an upcoming animated short.', type: ProjectType.IMAGE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/characters/400/300', tags: ['Illustration', 'Art'] },
+          { id: '3', title: 'Animation Reel', description: 'A short reel showcasing various hand-drawn animation techniques.', type: ProjectType.VIDEO, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/reel/400/300', tags: ['Animation', 'Motion Graphics'] },
+          { id: '4', title: 'The Art of Sketching', description: 'An eBook guide to digital sketching for beginners.', type: ProjectType.EBOOK, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/ebook/400/300', projectUrl: '#', tags: ['Education', 'Art'] },
+          { id: '5', title: 'Portfolio Backend API', description: 'The powerful backend driving this very portfolio.', type: ProjectType.OTHER, status: ProjectStatus.IN_PROGRESS, mediaUrl: 'https://picsum.photos/seed/api/400/300', tags: ['Node.js', 'API'], progress: 75 },
+          { id: '6', title: 'SVG Icon Pack', description: 'A new set of hand-drawn SVG icons for developers.', type: ProjectType.OTHER, status: ProjectStatus.UPCOMING, mediaUrl: 'https://picsum.photos/seed/svg/400/300', tags: ['Design', 'SVG'], progress: 20 },
+        ]);
+        const [posts, setPosts] = useState([
+          { id: 'post3', type: PostType.POLL, title: 'What should my next project be?', content: 'Vote for the idea you find most exciting!', timestamp: '1 day ago', reactions: {'🤔': 5}, pollOptions: [{id: 'opt1', text: 'A retro game'}, {id: 'opt2', text: 'An animated short'}, {id: 'opt3', text: 'A new icon pack'}], pollVotes: {'opt1': 12, 'opt2': 25, 'opt3': 8} },
+          { id: 'post2', type: PostType.IMAGE, title: 'New Character Design', content: 'Here\'s a sneak peek of a character for an upcoming project!', mediaUrl: 'https://picsum.photos/seed/new-char/600/400', timestamp: '3 days ago', reactions: { '❤️': 18, '👀': 11 } },
+          { id: 'post1', type: PostType.TEXT, title: 'Portfolio Launch!', content: 'Welcome to my new portfolio! I built it with React and a whole lot of sketches.', timestamp: '1 week ago', reactions: { '🎉': 25, '👍': 15 } },
+        ]);
+        const [blogPosts, setBlogPosts] = useState([
+            { id: 'blog1', title: 'My Journey into Creative Coding', content: 'It all started with a single blinking cursor...\n\nI wanted to build things that felt alive, that had personality. This portfolio is the culmination of that desire, blending code with a hand-drawn aesthetic to create something uniquely me.\n\nEvery line of code, every sketchy border, is a testament to the idea that the web doesn\'t have to be boring.', timestamp: '2 weeks ago', tags: ['creative-coding', 'react', 'design'] },
+            { id: 'blog2', title: 'The Power of a Sketch', content: 'Never underestimate the power of a simple sketch. They can convey complex ideas in a simple, accessible way. They break down barriers and invite people in.\n\nIn a world of pixel-perfect designs, a little bit of handcrafted charm can go a long way.', timestamp: '1 month ago', tags: ['art', 'philosophy', 'ui/ux'] }
+        ]);
+        const [requests, setRequests] = useState([
+            { id: 'req1', text: 'Can you make a tutorial on how you created the sketchy borders?', timestamp: '4 days ago', upvotes: 18 },
+            { id: 'req2', text: '#MoreAnimations! The wiggle effect is great.', timestamp: '1 week ago', upvotes: 12 },
+        ]);
+        const [comments, setComments] = useState([
+          { id: 'c1', author: 'ArtFan', text: 'This portfolio is so creative! Love the sketchy style.', timestamp: '2 hours ago', reactions: { '❤️': 10, '👍': 5 } },
+          { id: 'c2', author: 'DevDude', text: 'Nice work on the animations. How did you achieve the wiggle effect on hover?', timestamp: '1 hour ago', reactions: { '🤔': 3 } },
+        ]);
+
+        const handleLogin = (e) => {
+          e.preventDefault();
+          if (usernameInput.toLowerCase() === ADMIN_USERNAME && passwordInput === ADMIN_PASSWORD) { setIsAdminMode(true); setShowLogin(false); }
+          else if (usernameInput.toLowerCase() === ADMIN_USERNAME) { alert('Incorrect password for admin!'); }
+          else { setIsAdminMode(false); setShowLogin(false); }
+          setUsernameInput(''); setPasswordInput('');
+        }
+        const handleLogout = () => setIsAdminMode(false);
+        const handleUpdateProfile = (newProfile) => { if(isAdminMode) setProfile(newProfile); };
+        const handleSaveProject = (projectToSave) => {
+          if(!isAdminMode) return;
+          if (projects.find(p => p.id === projectToSave.id)) { setProjects(projects.map(p => p.id === projectToSave.id ? projectToSave : p)); } 
+          else { setProjects([...projects, { ...projectToSave, id: `p${Date.now()}` }]); }
+        };
+        const handleDeleteProject = (id) => { if(isAdminMode && window.confirm('Delete this project?')) { setProjects(projects.filter(p => p.id !== id)); } };
+        const handleAddPost = (postData) => {
+          if (!isAdminMode) return;
+          const newPost = { id: `post${Date.now()}`, ...postData, timestamp: 'Just now', reactions: {}, ...(postData.type === PostType.POLL && { pollVotes: {} }) };
+          setPosts(prev => [newPost, ...prev]);
+        };
+        const handleReactToPost = (postId, emoji) => { setPosts(posts.map(p => p.id === postId ? {...p, reactions: {...p.reactions, [emoji]: (p.reactions[emoji] || 0) + 1}} : p)); };
+        const handleVoteOnPoll = (postId, optionId) => {
+          setPosts(posts.map(p => {
+              if (p.id === postId && p.type === PostType.POLL) { const newVotes = { ...(p.pollVotes || {}) }; newVotes[optionId] = (newVotes[optionId] || 0) + 1; return {...p, pollVotes: newVotes}; }
+              return p;
+          }))
+        };
+        const handleAddComment = (commentText) => { setComments(prev => [...prev, { id: `c${Date.now()}`, author: 'Anonymous Reader', text: commentText, timestamp: 'Just now', reactions: {} }]); };
+        const handleDeleteComment = (id) => { if(isAdminMode) setComments(comments.filter(c => c.id !== id)); };
+        const handleReactToComment = (commentId, emoji) => { setComments(comments.map(c => c.id === commentId ? {...c, reactions: {...c.reactions, [emoji]: (c.reactions[emoji] || 0) + 1}} : c)); };
+        const handleSaveBlogPost = (postToSave) => {
+          if(!isAdminMode) return;
+          if (blogPosts.find(p => p.id === postToSave.id)) { setBlogPosts(blogPosts.map(p => p.id === postToSave.id ? postToSave : p)); } 
+          else { setBlogPosts([{ ...postToSave, id: `blog${Date.now()}`, timestamp: 'Just now' }, ...blogPosts]); }
+        };
+        const handleDeleteBlogPost = (id) => { if(isAdminMode && window.confirm('Delete this blog post?')) { setBlogPosts(blogPosts.filter(p => p.id !== id)); } };
+        const handleAddRequest = (text) => { setRequests(prev => [{ id: `req${Date.now()}`, text, timestamp: 'Just now', upvotes: 1 }, ...prev]); };
+        const handleUpvoteRequest = (id) => { setRequests(requests.map(r => r.id === id ? {...r, upvotes: r.upvotes + 1} : r)); };
+        const handleDeleteRequest = (id) => { if(isAdminMode) setRequests(requests.filter(r => r.id !== id)); };
+        
+        const completedProjects = useMemo(() => projects.filter(p => p.status === ProjectStatus.COMPLETED), [projects]);
+        const upcomingProjects = useMemo(() => projects.filter(p => p.status !== ProjectStatus.COMPLETED), [projects]);
+
+        return (
+          <div className="bg-white text-black min-h-screen font-body relative overflow-x-hidden">
+            <BackgroundSketches />
+            {showEasterEgg && <EasterEgg onClose={handleCloseEasterEgg} />}
+            {showPrivacyPopup && <PrivacyPopup onDismiss={handleDismissPrivacyPopup} />}
+            {showLogin && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <form onSubmit={handleLogin} className="sketch-card bg-white p-8 space-y-4 text-center w-80">
+                        <h2 className="text-3xl font-heading">Login</h2>
+                         <input type="text" value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} placeholder="Username" className="sketch-input w-full text-center" autoFocus/>
+                        <input type="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} placeholder="Password" className="sketch-input w-full text-center"/>
+                        <div className="flex gap-2 justify-center">
+                          <button type="submit" className="sketch-button bg-green-300 px-4 py-1">Login</button>
+                          <button type="button" onClick={() => setShowLogin(false)} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            )}
+            <div className="relative z-10 p-4 sm:p-6 md:p-8 lg:p-12">
+              <header className="text-center space-y-2 relative max-w-4xl mx-auto mb-12 sm:mb-16 md:mb-24">
+                  <h1 className="text-6xl md:text-8xl font-heading font-bold">Welcome</h1>
+                  <p className="text-xl md:text-2xl font-alt">to my creative sketchbook!</p>
+                  <div className="absolute top-0 right-0">
+                      {isAdminMode ? ( <button onClick={handleLogout} className="sketch-button bg-red-300 px-4 py-1 text-sm">Logout</button> ) : ( <button onClick={() => setShowLogin(true)} className="sketch-button bg-yellow-200 px-4 py-1 text-sm">Login</button> )}
+                  </div>
+              </header>
+              <main className="max-w-5xl mx-auto space-y-16">
+                <ProfileSection profile={profile} onUpdateProfile={handleUpdateProfile} isAdmin={isAdminMode} />
+                <WhatsNewSection posts={posts} onAddPost={handleAddPost} onReact={handleReactToPost} onVote={handleVoteOnPoll} isAdmin={isAdminMode} />
+                <ProjectsSection projects={completedProjects} isAdmin={isAdminMode} onSave={handleSaveProject} onDelete={handleDeleteProject} />
+                <UpcomingProjects projects={upcomingProjects} />
+                <RequestsSection requests={requests} onAddRequest={handleAddRequest} onUpvote={handleUpvoteRequest} onDelete={handleDeleteRequest} isAdmin={isAdminMode}/>
+                <BlogSection posts={blogPosts} onSave={handleSaveBlogPost} onDelete={handleDeleteBlogPost} isAdmin={isAdminMode} authorName={profile.name} />
+                <DiscussionSection comments={comments} onAddComment={handleAddComment} onReact={handleReactToComment} onDelete={handleDeleteComment} isAdmin={isAdminMode} />
+                {profile.patreonUrl && <PatreonSection url={profile.patreonUrl} />}
+                <ContactSection email={profile.email} />
+              </main>
+              <footer className="text-center text-gray-600 font-alt border-t-2 border-dashed border-black pt-8 mt-16 max-w-5xl mx-auto">
+                  <p>&copy; 2025 Azalea.Avtm. All sketches reserved.</p>
+                  <p>Crafted by the author for curious readers.</p>
+              </footer>
+            </div>
+          </div>
+        );
+      };
+
+      // --- From index.tsx ---
+      const rootElement = document.getElementById('root');
+      if (!rootElement) {
+        throw new Error("Could not find root element to mount to");
+      }
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    </script>
+  </body>
+</html>
