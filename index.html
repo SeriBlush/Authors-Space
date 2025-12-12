@@ -47,7 +47,7 @@
       body {
         font-family: 'Patrick Hand', cursive;
         background-color: #fdfdfd;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60' viewBox='0 0 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       }
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Caveat', cursive;
@@ -340,48 +340,15 @@
       };
       
       // --- From components/ProjectsSection.tsx ---
-      const ProjectsSection = ({ projects, isAdmin, onSave, onDelete }) => {
-        const EditIcon = ({className}) => ( <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+      const ProjectsSection = ({ projects, isAdmin, onAdd, onEdit, onDelete }) => {
+        const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
         const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> );
         
-        const emptyProject = { title: '', description: '', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/400/300', projectUrl: '', tags: [], progress: 0 };
-        
-        const ProjectFormModal = ({ project, onSave, onClose }) => {
-            const [formData, setFormData] = useState(project || emptyProject);
-            const handleChange = (e) => {
-                const { name, value } = e.target;
-                if(name === 'tags') {
-                    setFormData(prev => ({ ...prev, tags: value.split(',').map(t => t.trim()) }));
-                } else {
-                    setFormData(prev => ({...prev, [name]: value }));
-                }
-            };
-            const handleSubmit = (e) => { e.preventDefault(); onSave(formData); onClose(); };
-            if (!project) return null;
-            return (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <form onSubmit={handleSubmit} className="sketch-card bg-white p-6 space-y-3 w-full max-w-lg max-h-full overflow-y-auto">
-                        <h2 className="text-3xl font-heading">{'id' in project ? 'Edit' : 'Add'} Project</h2>
-                        <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="sketch-input w-full"/>
-                        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="sketch-input w-full h-24"/>
-                        <input name="mediaUrl" value={formData.mediaUrl} onChange={handleChange} placeholder="Media URL (Image/Video)" className="sketch-input w-full"/>
-                        <input name="projectUrl" value={formData.projectUrl} onChange={handleChange} placeholder="Project URL (Live site)" className="sketch-input w-full"/>
-                        <input name="tags" value={formData.tags.join(', ')} onChange={handleChange} placeholder="Tags (comma, separated)" className="sketch-input w-full"/>
-                        <div className="grid grid-cols-2 gap-4">
-                            <select name="type" value={formData.type} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectType).map(type => <option key={type} value={type}>{type}</option>)}</select>
-                            <select name="status" value={formData.status} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectStatus).map(status => <option key={status} value={status}>{status}</option>)}</select>
-                        </div>
-                         {formData.status !== ProjectStatus.COMPLETED && <input type="range" name="progress" min="0" max="100" value={formData.progress} onChange={handleChange} className="w-full"/>}
-                        <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Save</button><button type="button" onClick={onClose} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
-                    </form>
-                </div>
-            );
-        };
         const ProjectCard = ({ project, isAdmin, onEdit, onDelete }) => {
             return (
                 <Card className="flex flex-col h-full group">
-                    {isAdmin && ( <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => onEdit(project)} className="sketch-button bg-yellow-200 p-2"><EditIcon className="w-4 h-4"/></button><button onClick={() => onDelete(project.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon className="w-4 h-4"/></button></div> )}
+                    {isAdmin && ( <div className="absolute top-2 right-2 flex gap-2"><button onClick={() => onEdit(project)} className="sketch-button bg-yellow-200 p-2"><EditIcon/></button><button onClick={() => onDelete(project.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon/></button></div> )}
                     <div className="aspect-[4/3] bg-gray-100 border-2 border-black mb-4"><img src={project.mediaUrl} alt={project.title} className="w-full h-full object-cover" /></div>
                     <div className="flex-grow flex flex-col">
                         <span className="text-sm bg-black text-white px-2 py-0.5 self-start font-alt mb-2">{project.type}</span>
@@ -393,25 +360,22 @@
                 </Card>
             );
         };
+
         const [filter, setFilter] = useState('All');
-        const [editingProject, setEditingProject] = useState(null);
-        useEffect(() => { if (!isAdmin) { setEditingProject(null); } }, [isAdmin]);
         const projectTypes = ['All', ...Object.values(ProjectType)];
         const filteredProjects = filter === 'All' ? projects : projects.filter(p => p.type === filter);
-        const handleAdd = () => setEditingProject(emptyProject);
-        const handleEdit = (project) => setEditingProject(project);
+        
         return (
           <section>
-              {editingProject && <ProjectFormModal project={editingProject} onSave={onSave} onClose={() => setEditingProject(null)} />}
             <div className="flex justify-between items-start">
               <SectionHeader title="My Projects" />
-              {isAdmin && <button onClick={handleAdd} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon/> Add Project</button>}
+              {isAdmin && <button onClick={onAdd} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon/> Add Project</button>}
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
               {projectTypes.map(type => ( <button key={type} onClick={() => setFilter(type)} className={`sketch-button px-4 py-1 text-sm ${filter === type ? 'bg-yellow-300' : 'bg-white'}`}>{type}</button>))}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredProjects.map(project => ( <ProjectCard key={project.id} project={project} isAdmin={isAdmin} onEdit={handleEdit} onDelete={onDelete} /> ))}
+              {filteredProjects.map(project => ( <ProjectCard key={project.id} project={project} isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} /> ))}
               {filteredProjects.length === 0 && <p className="font-alt text-gray-500">No projects of this type yet. Scribble some up!</p>}
             </div>
           </section>
@@ -419,7 +383,11 @@
       };
 
       // --- From components/UpcomingProjects.tsx ---
-      const UpcomingProjects = ({ projects }) => {
+      const UpcomingProjects = ({ projects, isAdmin, onAdd, onEdit, onDelete }) => {
+        const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
+        const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+
         const ProgressBar = ({ progress }) => {
           return (
             <div className="w-full progress-bar-container bg-white mt-2">
@@ -429,7 +397,13 @@
         };
         const UpcomingProjectCard = ({ project }) => {
           return (
-            <div className="border-b-2 border-dashed border-black py-4 last:border-b-0">
+            <div className="border-b-2 border-dashed border-black py-4 last:border-b-0 relative group">
+                {isAdmin && (
+                  <div className="absolute top-2 right-2 flex gap-2">
+                      <button onClick={() => onEdit(project)} className="sketch-button bg-yellow-200 p-2"><EditIcon/></button>
+                      <button onClick={() => onDelete(project.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon/></button>
+                  </div>
+                )}
                 <div className="flex justify-between items-start">
                     <div>
                         <h3 className="text-2xl font-heading font-bold">{project.title}</h3>
@@ -441,13 +415,17 @@
             </div>
           )
         }
-        if (projects.length === 0) return null;
+        if (projects.length === 0 && !isAdmin) return null;
         return (
           <section>
-            <SectionHeader title="What's Next?" />
+            <div className="flex justify-between items-start">
+                <SectionHeader title="What's Next?" />
+                {isAdmin && <button onClick={onAdd} className="sketch-button bg-green-300 p-2 flex items-center gap-2 -mt-2"><PlusIcon/> Add Upcoming</button>}
+            </div>
             <Card>
               <div className="space-y-4">
                 {projects.map(project => ( <UpcomingProjectCard key={project.id} project={project} /> ))}
+                {projects.length === 0 && <p className="font-alt text-gray-500 text-center py-4">Nothing in the pipeline. Add a new upcoming project!</p>}
               </div>
             </Card>
           </section>
@@ -469,7 +447,7 @@
                 </div>
                 <div className="mt-1 flex items-center gap-1">
                     {COMMENT_REACTIONS.map(emoji => ( <button key={emoji} onClick={() => onReact(comment.id, emoji)} className="sketch-button bg-white px-2 py-0 text-sm">{emoji} <span className="font-body text-xs ml-1">{comment.reactions[emoji] || 0}</span></button> ))}
-                    {isAdmin && <button onClick={() => onDelete(comment.id)} className="sketch-button bg-red-300 p-1 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"><DeleteIcon /></button>}
+                    {isAdmin && <button onClick={() => onDelete(comment.id)} className="sketch-button bg-red-300 p-1 ml-auto"><DeleteIcon /></button>}
                 </div>
               </div>
             </div>
@@ -572,7 +550,7 @@
             return (
               <div className="border-b-2 border-dashed border-black py-6 last:border-b-0 relative group">
                   {isAdmin && (
-                    <button onClick={() => onDelete(post.id)} className="sketch-button bg-red-300 p-2 absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => onDelete(post.id)} className="sketch-button bg-red-300 p-2 absolute top-4 right-4">
                         <DeleteIcon />
                     </button>
                   )}
@@ -719,7 +697,7 @@
                           <p className="text-gray-800 text-lg">{request.text}</p>
                           <span className="text-xs text-gray-500 font-alt">{request.timestamp} by an anonymous user</span>
                       </div>
-                      {isAdmin && <button onClick={() => onDelete(request.id)} className="sketch-button bg-red-300 p-2 opacity-0 group-hover:opacity-100 transition-opacity"><DeleteIcon /></button>}
+                      {isAdmin && <button onClick={() => onDelete(request.id)} className="sketch-button bg-red-300 p-2"><DeleteIcon /></button>}
                   </div>
               )
           };
@@ -756,6 +734,75 @@
       const App = () => {
         const ADMIN_PASSWORD = 'emergent';
         const ADMIN_USERNAME = 'seri.wrts';
+        const STORAGE_PREFIX = 'portfolio-app-';
+
+        // --- Initial Data ---
+        const initialProfile = {
+          name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
+          expertise: "Creative Developer & Storyteller", location: "Sketchburg, ART",
+          company: { name: "Inkwell Studios", url: "#" },
+          bio: "I turn ideas into interactive, hand-drawn experiences. With a passion for unique UIs and a love for all things sketched, I build web applications that don't just work well, but also have a personality. This whole portfolio is a testament to that philosophy!",
+          socials: { linkedin: '#', github: '#', twitter: '#' },
+          email: 'hello@alexsketch.com', patreonUrl: 'https://www.patreon.com/c/AzaleaAutumn',
+        };
+        const initialProjects = [
+          { id: '1', title: 'Interactive Storybook', description: 'A web-based storybook with animated sketches and clickable elements.', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/storybook/400/300', projectUrl: '#', tags: ['React', 'Animation', 'UI/UX'] },
+          { id: '2', title: 'Character Sketches', description: 'A collection of character designs for an upcoming animated short.', type: ProjectType.IMAGE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/characters/400/300', tags: ['Illustration', 'Art'] },
+          { id: '3', title: 'Animation Reel', description: 'A short reel showcasing various hand-drawn animation techniques.', type: ProjectType.VIDEO, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/reel/400/300', tags: ['Animation', 'Motion Graphics'] },
+          { id: '4', title: 'The Art of Sketching', description: 'An eBook guide to digital sketching for beginners.', type: ProjectType.EBOOK, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/ebook/400/300', projectUrl: '#', tags: ['Education', 'Art'] },
+          { id: '5', title: 'Portfolio Backend API', description: 'The powerful backend driving this very portfolio.', type: ProjectType.OTHER, status: ProjectStatus.IN_PROGRESS, mediaUrl: 'https://picsum.photos/seed/api/400/300', tags: ['Node.js', 'API'], progress: 75 },
+          { id: '6', title: 'SVG Icon Pack', description: 'A new set of hand-drawn SVG icons for developers.', type: ProjectType.OTHER, status: ProjectStatus.UPCOMING, mediaUrl: 'https://picsum.photos/seed/svg/400/300', tags: ['Design', 'SVG'], progress: 20 },
+        ];
+        const initialPosts = [
+          { id: 'post3', type: PostType.POLL, title: 'What should my next project be?', content: 'Vote for the idea you find most exciting!', timestamp: '1 day ago', reactions: {'🤔': 5}, pollOptions: [{id: 'opt1', text: 'A retro game'}, {id: 'opt2', text: 'An animated short'}, {id: 'opt3', text: 'A new icon pack'}], pollVotes: {'opt1': 12, 'opt2': 25, 'opt3': 8} },
+          { id: 'post2', type: PostType.IMAGE, title: 'New Character Design', content: 'Here\'s a sneak peek of a character for an upcoming project!', mediaUrl: 'https://picsum.photos/seed/new-char/600/400', timestamp: '3 days ago', reactions: { '❤️': 18, '👀': 11 } },
+          { id: 'post1', type: PostType.TEXT, title: 'Portfolio Launch!', content: 'Welcome to my new portfolio! I built it with React and a whole lot of sketches.', timestamp: '1 week ago', reactions: { '🎉': 25, '👍': 15 } },
+        ];
+        const initialBlogPosts = [
+            { id: 'blog1', title: 'My Journey into Creative Coding', content: 'It all started with a single blinking cursor...\n\nI wanted to build things that felt alive, that had personality. This portfolio is the culmination of that desire, blending code with a hand-drawn aesthetic to create something uniquely me.\n\nEvery line of code, every sketchy border, is a testament to the idea that the web doesn\'t have to be boring.', timestamp: '2 weeks ago', tags: ['creative-coding', 'react', 'design'] },
+            { id: 'blog2', title: 'The Power of a Sketch', content: 'Never underestimate the power of a simple sketch. They can convey complex ideas in a simple, accessible way. They break down barriers and invite people in.\n\nIn a world of pixel-perfect designs, a little bit of handcrafted charm can go a long way.', timestamp: '1 month ago', tags: ['art', 'philosophy', 'ui/ux'] }
+        ];
+        const initialRequests = [
+            { id: 'req1', text: 'Can you make a tutorial on how you created the sketchy borders?', timestamp: '4 days ago', upvotes: 18 },
+            { id: 'req2', text: '#MoreAnimations! The wiggle effect is great.', timestamp: '1 week ago', upvotes: 12 },
+        ];
+        const initialComments = [
+          { id: 'c1', author: 'ArtFan', text: 'This portfolio is so creative! Love the sketchy style.', timestamp: '2 hours ago', reactions: { '❤️': 10, '👍': 5 } },
+          { id: 'c2', author: 'DevDude', text: 'Nice work on the animations. How did you achieve the wiggle effect on hover?', timestamp: '1 hour ago', reactions: { '🤔': 3 } },
+        ];
+
+        // --- LocalStorage Logic ---
+        const getInitialState = (key, defaultValue) => {
+          try {
+            const item = window.localStorage.getItem(`${STORAGE_PREFIX}${key}`);
+            return item ? JSON.parse(item) : defaultValue;
+          } catch (error) {
+            console.error(`Error reading from localStorage for key "${key}":`, error);
+            return defaultValue;
+          }
+        };
+
+        const usePersistentState = (key, defaultValue) => {
+            const [state, setState] = useState(() => getInitialState(key, defaultValue));
+
+            useEffect(() => {
+                try {
+                    window.localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(state));
+                } catch (error) {
+                    console.error(`Error writing to localStorage for key "${key}":`, error);
+                }
+            }, [key, state]);
+
+            return [state, setState];
+        };
+        
+        // --- State Management ---
+        const [profile, setProfile] = usePersistentState('profile', initialProfile);
+        const [projects, setProjects] = usePersistentState('projects', initialProjects);
+        const [posts, setPosts] = usePersistentState('posts', initialPosts);
+        const [blogPosts, setBlogPosts] = usePersistentState('blogPosts', initialBlogPosts);
+        const [requests, setRequests] = usePersistentState('requests', initialRequests);
+        const [comments, setComments] = usePersistentState('comments', initialComments);
 
         const [isAdminMode, setIsAdminMode] = useState(false);
         const [usernameInput, setUsernameInput] = useState('');
@@ -763,7 +810,10 @@
         const [showLogin, setShowLogin] = useState(false);
         const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
         const [showEasterEgg, setShowEasterEgg] = useState(false);
+        const [editingProject, setEditingProject] = useState(null);
 
+        const emptyProject = { title: '', description: '', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/400/300', projectUrl: '', tags: [], progress: 0 };
+        
         const keySequence = useRef('');
         const sequenceTimeout = useRef(null);
 
@@ -791,40 +841,6 @@
         }, []);
         const handleDismissPrivacyPopup = () => { localStorage.setItem('hasSeenPrivacyPopup', 'true'); setShowPrivacyPopup(false); };
         
-        const [profile, setProfile] = useState({
-          name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
-          expertise: "Creative Developer & Storyteller", location: "Sketchburg, ART",
-          company: { name: "Inkwell Studios", url: "#" },
-          bio: "I turn ideas into interactive, hand-drawn experiences. With a passion for unique UIs and a love for all things sketched, I build web applications that don't just work well, but also have a personality. This whole portfolio is a testament to that philosophy!",
-          socials: { linkedin: '#', github: '#', twitter: '#' },
-          email: 'hello@alexsketch.com', patreonUrl: 'https://www.patreon.com/alexsketcherman',
-        });
-        const [projects, setProjects] = useState([
-          { id: '1', title: 'Interactive Storybook', description: 'A web-based storybook with animated sketches and clickable elements.', type: ProjectType.WEBSITE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/storybook/400/300', projectUrl: '#', tags: ['React', 'Animation', 'UI/UX'] },
-          { id: '2', title: 'Character Sketches', description: 'A collection of character designs for an upcoming animated short.', type: ProjectType.IMAGE, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/characters/400/300', tags: ['Illustration', 'Art'] },
-          { id: '3', title: 'Animation Reel', description: 'A short reel showcasing various hand-drawn animation techniques.', type: ProjectType.VIDEO, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/reel/400/300', tags: ['Animation', 'Motion Graphics'] },
-          { id: '4', title: 'The Art of Sketching', description: 'An eBook guide to digital sketching for beginners.', type: ProjectType.EBOOK, status: ProjectStatus.COMPLETED, mediaUrl: 'https://picsum.photos/seed/ebook/400/300', projectUrl: '#', tags: ['Education', 'Art'] },
-          { id: '5', title: 'Portfolio Backend API', description: 'The powerful backend driving this very portfolio.', type: ProjectType.OTHER, status: ProjectStatus.IN_PROGRESS, mediaUrl: 'https://picsum.photos/seed/api/400/300', tags: ['Node.js', 'API'], progress: 75 },
-          { id: '6', title: 'SVG Icon Pack', description: 'A new set of hand-drawn SVG icons for developers.', type: ProjectType.OTHER, status: ProjectStatus.UPCOMING, mediaUrl: 'https://picsum.photos/seed/svg/400/300', tags: ['Design', 'SVG'], progress: 20 },
-        ]);
-        const [posts, setPosts] = useState([
-          { id: 'post3', type: PostType.POLL, title: 'What should my next project be?', content: 'Vote for the idea you find most exciting!', timestamp: '1 day ago', reactions: {'🤔': 5}, pollOptions: [{id: 'opt1', text: 'A retro game'}, {id: 'opt2', text: 'An animated short'}, {id: 'opt3', text: 'A new icon pack'}], pollVotes: {'opt1': 12, 'opt2': 25, 'opt3': 8} },
-          { id: 'post2', type: PostType.IMAGE, title: 'New Character Design', content: 'Here\'s a sneak peek of a character for an upcoming project!', mediaUrl: 'https://picsum.photos/seed/new-char/600/400', timestamp: '3 days ago', reactions: { '❤️': 18, '👀': 11 } },
-          { id: 'post1', type: PostType.TEXT, title: 'Portfolio Launch!', content: 'Welcome to my new portfolio! I built it with React and a whole lot of sketches.', timestamp: '1 week ago', reactions: { '🎉': 25, '👍': 15 } },
-        ]);
-        const [blogPosts, setBlogPosts] = useState([
-            { id: 'blog1', title: 'My Journey into Creative Coding', content: 'It all started with a single blinking cursor...\n\nI wanted to build things that felt alive, that had personality. This portfolio is the culmination of that desire, blending code with a hand-drawn aesthetic to create something uniquely me.\n\nEvery line of code, every sketchy border, is a testament to the idea that the web doesn\'t have to be boring.', timestamp: '2 weeks ago', tags: ['creative-coding', 'react', 'design'] },
-            { id: 'blog2', title: 'The Power of a Sketch', content: 'Never underestimate the power of a simple sketch. They can convey complex ideas in a simple, accessible way. They break down barriers and invite people in.\n\nIn a world of pixel-perfect designs, a little bit of handcrafted charm can go a long way.', timestamp: '1 month ago', tags: ['art', 'philosophy', 'ui/ux'] }
-        ]);
-        const [requests, setRequests] = useState([
-            { id: 'req1', text: 'Can you make a tutorial on how you created the sketchy borders?', timestamp: '4 days ago', upvotes: 18 },
-            { id: 'req2', text: '#MoreAnimations! The wiggle effect is great.', timestamp: '1 week ago', upvotes: 12 },
-        ]);
-        const [comments, setComments] = useState([
-          { id: 'c1', author: 'ArtFan', text: 'This portfolio is so creative! Love the sketchy style.', timestamp: '2 hours ago', reactions: { '❤️': 10, '👍': 5 } },
-          { id: 'c2', author: 'DevDude', text: 'Nice work on the animations. How did you achieve the wiggle effect on hover?', timestamp: '1 hour ago', reactions: { '🤔': 3 } },
-        ]);
-
         const handleLogin = (e) => {
           e.preventDefault();
           if (usernameInput.toLowerCase() === ADMIN_USERNAME && passwordInput === ADMIN_PASSWORD) { setIsAdminMode(true); setShowLogin(false); }
@@ -833,23 +849,37 @@
           setUsernameInput(''); setPasswordInput('');
         }
         const handleLogout = () => setIsAdminMode(false);
+        const handleResetData = () => {
+          if (window.confirm('Are you sure you want to reset ALL content to the original defaults? This cannot be undone.')) {
+            Object.keys(localStorage).forEach(key => {
+              if (key.startsWith(STORAGE_PREFIX)) {
+                localStorage.removeItem(key);
+              }
+            });
+            window.location.reload();
+          }
+        };
+
         const handleUpdateProfile = (newProfile) => { if(isAdminMode) setProfile(newProfile); };
+        
         const handleSaveProject = (projectToSave) => {
           if(!isAdminMode) return;
           if (projects.find(p => p.id === projectToSave.id)) { setProjects(projects.map(p => p.id === projectToSave.id ? projectToSave : p)); } 
           else { setProjects([...projects, { ...projectToSave, id: `p${Date.now()}` }]); }
+          setEditingProject(null);
         };
+        const handleEditProject = (project) => setEditingProject(project);
+        const handleAddProject = () => setEditingProject(emptyProject);
+        const handleAddUpcomingProject = () => setEditingProject({...emptyProject, status: ProjectStatus.IN_PROGRESS });
+        const handleCloseModal = () => setEditingProject(null);
         const handleDeleteProject = (id) => { if(isAdminMode && window.confirm('Delete this project?')) { setProjects(projects.filter(p => p.id !== id)); } };
+
         const handleAddPost = (postData) => {
           if (!isAdminMode) return;
           const newPost = { id: `post${Date.now()}`, ...postData, timestamp: 'Just now', reactions: {}, ...(postData.type === PostType.POLL && { pollVotes: {} }) };
           setPosts(prev => [newPost, ...prev]);
         };
-        const handleDeletePost = (postId) => {
-            if (isAdminMode && window.confirm('Are you sure you want to delete this post?')) {
-                setPosts(posts.filter(p => p.id !== postId));
-            }
-        };
+        const handleDeletePost = (postId) => { if (isAdminMode && window.confirm('Are you sure you want to delete this post?')) { setPosts(posts.filter(p => p.id !== postId)); } };
         const handleReactToPost = (postId, emoji) => { setPosts(posts.map(p => p.id === postId ? {...p, reactions: {...p.reactions, [emoji]: (p.reactions[emoji] || 0) + 1}} : p)); };
         const handleVoteOnPoll = (postId, optionId) => {
           setPosts(posts.map(p => {
@@ -871,13 +901,46 @@
         const handleDeleteRequest = (id) => { if(isAdminMode) setRequests(requests.filter(r => r.id !== id)); };
         
         const completedProjects = useMemo(() => projects.filter(p => p.status === ProjectStatus.COMPLETED), [projects]);
-        const upcomingProjects = useMemo(() => projects.filter(p => p.status !== ProjectStatus.COMPLETED), [projects]);
+        const upcomingProjects = useMemo(() => projects.filter(p => p.status !== ProjectStatus.COMPLETED).sort((a,b) => (b.progress || 0) - (a.progress || 0)), [projects]);
+
+        const ProjectFormModal = ({ project, onSave, onClose }) => {
+            const [formData, setFormData] = useState(project || emptyProject);
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                if(name === 'tags') {
+                    setFormData(prev => ({ ...prev, tags: value.split(',').map(t => t.trim()) }));
+                } else {
+                    setFormData(prev => ({...prev, [name]: value }));
+                }
+            };
+            const handleSubmit = (e) => { e.preventDefault(); onSave(formData); onClose(); };
+            if (!project) return null;
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <form onSubmit={handleSubmit} className="sketch-card bg-white p-6 space-y-3 w-full max-w-lg max-h-full overflow-y-auto">
+                        <h2 className="text-3xl font-heading">{'id' in project ? 'Edit' : 'Add'} Project</h2>
+                        <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="sketch-input w-full"/>
+                        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="sketch-input w-full h-24"/>
+                        <input name="mediaUrl" value={formData.mediaUrl} onChange={handleChange} placeholder="Media URL (Image/Video)" className="sketch-input w-full"/>
+                        <input name="projectUrl" value={formData.projectUrl} onChange={handleChange} placeholder="Project URL (Live site)" className="sketch-input w-full"/>
+                        <input name="tags" value={formData.tags.join(', ')} onChange={handleChange} placeholder="Tags (comma, separated)" className="sketch-input w-full"/>
+                        <div className="grid grid-cols-2 gap-4">
+                            <select name="type" value={formData.type} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectType).map(type => <option key={type} value={type}>{type}</option>)}</select>
+                            <select name="status" value={formData.status} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectStatus).map(status => <option key={status} value={status}>{status}</option>)}</select>
+                        </div>
+                         {formData.status !== ProjectStatus.COMPLETED && <div><label className="text-sm">Progress: {formData.progress}%</label><input type="range" name="progress" min="0" max="100" value={formData.progress} onChange={handleChange} className="w-full"/></div>}
+                        <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Save</button><button type="button" onClick={onClose} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
+                    </form>
+                </div>
+            );
+        };
 
         return (
           <div className="bg-white text-black min-h-screen font-body relative overflow-x-hidden">
             <BackgroundSketches />
             {showEasterEgg && <EasterEgg onClose={handleCloseEasterEgg} />}
             {showPrivacyPopup && <PrivacyPopup onDismiss={handleDismissPrivacyPopup} />}
+            {editingProject && <ProjectFormModal project={editingProject} onSave={handleSaveProject} onClose={handleCloseModal} />}
             {showLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <form onSubmit={handleLogin} className="sketch-card bg-white p-8 space-y-4 text-center w-80">
@@ -895,15 +958,22 @@
               <header className="text-center space-y-2 relative max-w-4xl mx-auto mb-12 sm:mb-16 md:mb-24">
                   <h1 className="text-6xl md:text-8xl font-heading font-bold">Welcome</h1>
                   <p className="text-xl md:text-2xl font-alt">to my creative sketchbook!</p>
-                  <div className="absolute top-0 right-0">
-                      {isAdminMode ? ( <button onClick={handleLogout} className="sketch-button bg-red-300 px-4 py-1 text-sm">Logout</button> ) : ( <button onClick={() => setShowLogin(true)} className="sketch-button bg-yellow-200 px-4 py-1 text-sm">Login</button> )}
+                  <div className="absolute top-0 right-0 flex flex-col sm:flex-row gap-2">
+                      {isAdminMode ? (
+                        <>
+                          <button onClick={handleResetData} className="sketch-button bg-gray-300 px-4 py-1 text-sm">Reset Data</button>
+                          <button onClick={handleLogout} className="sketch-button bg-red-300 px-4 py-1 text-sm">Logout</button>
+                        </>
+                      ) : (
+                        <button onClick={() => setShowLogin(true)} className="sketch-button bg-yellow-200 px-4 py-1 text-sm">Login</button>
+                      )}
                   </div>
               </header>
               <main className="max-w-5xl mx-auto space-y-16">
                 <ProfileSection profile={profile} onUpdateProfile={handleUpdateProfile} isAdmin={isAdminMode} />
                 <WhatsNewSection posts={posts} onAddPost={handleAddPost} onReact={handleReactToPost} onVote={handleVoteOnPoll} onDelete={handleDeletePost} isAdmin={isAdminMode} />
-                <ProjectsSection projects={completedProjects} isAdmin={isAdminMode} onSave={handleSaveProject} onDelete={handleDeleteProject} />
-                <UpcomingProjects projects={upcomingProjects} />
+                <ProjectsSection projects={completedProjects} isAdmin={isAdminMode} onAdd={handleAddProject} onEdit={handleEditProject} onDelete={handleDeleteProject} />
+                <UpcomingProjects projects={upcomingProjects} isAdmin={isAdminMode} onAdd={handleAddUpcomingProject} onEdit={handleEditProject} onDelete={handleDeleteProject} />
                 <RequestsSection requests={requests} onAddRequest={handleAddRequest} onUpvote={handleUpvoteRequest} onDelete={handleDeleteRequest} isAdmin={isAdminMode}/>
                 <BlogSection posts={blogPosts} onSave={handleSaveBlogPost} onDelete={handleDeleteBlogPost} isAdmin={isAdminMode} authorName={profile.name} />
                 <DiscussionSection comments={comments} onAddComment={handleAddComment} onReact={handleReactToComment} onDelete={handleDeleteComment} isAdmin={isAdminMode} />
