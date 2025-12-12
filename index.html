@@ -130,7 +130,7 @@
     <script type="text/babel">
       const { useState, useMemo, useEffect, useRef } = React;
 
-      // --- From types.ts ---
+      // --- Data Enums ---
       const ProjectType = {
         WEBSITE: 'Website',
         IMAGE: 'Image',
@@ -152,7 +152,7 @@
         POLL: 'Poll',
       };
       
-      // --- From components/common/Card.tsx ---
+      // --- Common Components ---
       const Card = ({ children, className = '', as: Component = 'div', ...rest }) => {
         return (
           <Component className={`sketch-card bg-white p-6 relative ${className}`} {...rest}>
@@ -161,7 +161,6 @@
         );
       };
       
-      // --- From components/common/SectionHeader.tsx ---
       const SketchyUnderline = () => (
         <svg className="w-full h-3" viewBox="0 0 100 5" preserveAspectRatio="none">
           <path d="M0,3 Q25,1 50,3 T100,2" stroke="black" strokeWidth="2" fill="transparent" strokeLinecap="round" />
@@ -176,7 +175,6 @@
         );
       };
       
-      // --- From components/BackgroundSketches.tsx ---
       const BackgroundSketches = () => {
           return (
               <div className="fixed inset-0 z-[-1] opacity-20 text-gray-400 pointer-events-none hidden lg:block" aria-hidden="true">
@@ -193,7 +191,6 @@
           )
       };
 
-      // --- From components/EasterEgg.tsx ---
       const FountainPenIcon = ({ className }) => (
           <svg className={className} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M54.3431 9.65685C50.4379 5.75161 44.1062 5.75161 40.201 9.65685L12.9289 36.9289C11.3668 38.491 10.7426 40.6653 11.2193 42.7279L12.9896 51.579C13.4663 53.6416 15.2416 55.2416 17.3023 55.5451L26.495 56.7847C28.5576 57.0882 30.7319 56.464 32.294 54.9019L59.5661 27.6298C63.4713 23.7246 63.4713 17.3929 59.5661 13.5877L54.3431 9.65685Z" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -241,7 +238,6 @@
           );
       };
 
-      // --- From components/PrivacyPopup.tsx ---
       const PrivacyPopup = ({ onDismiss }) => {
           return (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -263,16 +259,17 @@
           );
       };
       
-      // --- From components/ProfileSection.tsx ---
-      const VerifiedBadge = () => ( <svg className="w-6 h-6 inline-block text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.121 7.293a1 1 0 010 1.414l-4.5 4.5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 111.414-1.414L9.5 11.086l3.793-3.793a1 1 0 011.414 0z" /></svg> );
-      const LocationIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> );
-      const CompanyIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 21h-20v-16h20v16zm-10-12h-6v2h6v-2zm-6 4h6v2h-6v-2zm-2-8v-3h12v3h-12z" /></svg> );
-      const EditIcon = ({className}) => ( <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
-      const GithubIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>);
-      const LinkedinIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>);
-      const TwitterIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Twitter</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.223.085a4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>);
-      const PatreonIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M15.219.015c-4.433 0-8.035 3.602-8.035 8.035s3.602 8.035 8.035 8.035 8.035-3.602 8.035-8.035S19.652.015 15.219.015zm-9.035 2.55h-3.6v18.88h3.6V2.565z"/></svg>);
+      // --- Section Components ---
       const ProfileSection = ({ profile, onUpdateProfile, isAdmin }) => {
+        const VerifiedBadge = () => ( <svg className="w-6 h-6 inline-block text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.121 7.293a1 1 0 010 1.414l-4.5 4.5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 111.414-1.414L9.5 11.086l3.793-3.793a1 1 0 011.414 0z" /></svg> );
+        const LocationIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> );
+        const CompanyIcon = () => ( <svg className="w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 21h-20v-16h20v16zm-10-12h-6v2h6v-2zm-6 4h6v2h-6v-2zm-2-8v-3h12v3h-12z" /></svg> );
+        const EditIcon = () => ( <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+        const GithubIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>);
+        const LinkedinIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>);
+        const TwitterIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Twitter</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.223.085a4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>);
+        const PatreonIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M15.219.015c-4.433 0-8.035 3.602-8.035 8.035s3.602 8.035 8.035 8.035 8.035-3.602 8.035-8.035S19.652.015 15.219.015zm-9.035 2.55h-3.6v18.88h3.6V2.565z"/></svg>);
+        
         const [isEditing, setIsEditing] = useState(false);
         const [editableProfile, setEditableProfile] = useState(profile);
         useEffect(() => { setEditableProfile(profile); }, [profile]);
@@ -342,10 +339,9 @@
         );
       };
       
-      // --- From components/ProjectsSection.tsx ---
       const ProjectsSection = ({ projects, isAdmin, onAdd, onEdit, onDelete, onView }) => {
-        const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
-        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+        const EditIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+        const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> );
         
         const ProjectCard = ({ project, isAdmin, onEdit, onDelete, onView }) => {
@@ -387,12 +383,10 @@
         );
       };
 
-      // --- From components/UpcomingProjects.tsx ---
       const UpcomingProjects = ({ projects, isAdmin, onAdd, onEdit, onDelete }) => {
         const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
-        const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
-        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
-
+        const EditIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> );
+        const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const ProgressBar = ({ progress }) => {
           return (
             <div className="w-full progress-bar-container bg-white mt-2">
@@ -437,9 +431,8 @@
         );
       };
 
-      // --- From components/DiscussionSection.tsx ---
       const DiscussionSection = ({ comments, onAddComment, onReact, onDelete, isAdmin }) => {
-        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+        const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const COMMENT_REACTIONS = ['👍', '❤️', '😂', '🤔'];
         const CommentCard = ({ comment, onReact, onDelete, isAdmin }) => {
           return (
@@ -483,7 +476,6 @@
         );
       };
 
-      // --- From components/ContactSection.tsx ---
       const ContactSection = ({ email }) => {
           const MailIcon = () => ( <svg className="w-6 h-6 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> );
           return (
@@ -497,10 +489,9 @@
           );
       };
 
-      // --- From components/WhatsNewSection.tsx ---
       const WhatsNewSection = ({ posts, isAdmin, onAddPost, onReact, onVote, onDelete }) => {
         const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
-        const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
+        const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> );
         const REACTIONS = ['👍', '❤️', '🎉', '👀'];
         
         const PostForm = ({ onSave, onCancel }) => {
@@ -604,7 +595,6 @@
         );
       }
 
-      // --- From components/PatreonSection.tsx ---
       const PatreonSection = ({ url }) => {
           const PatreonIcon = () => ( <svg role="img" viewBox="0 0 24 24" className="w-6 h-6 inline-block mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><title>Patreon</title><path d="M15.219.015c-4.433 0-8.035 3.602-8.035 8.035s3.602 8.035 8.035 8.035 8.035-3.602 8.035-8.035S19.652.015 15.219.015zm-9.035 2.55h-3.6v18.88h3.6V2.565z"/></svg> );
           return (
@@ -618,12 +608,11 @@
           );
       };
 
-      // --- From components/BlogSection.tsx ---
       const BlogSection = ({ posts, isAdmin, onSave, onDelete, authorName }) => {
           const PlusIcon = () => ( <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>);
-          const EditIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>);
-          const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
-          const PaperclipIcon = ({ className }) => ( <svg className={`absolute ${className}`} width="30" height="80" viewBox="0 0 30 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 78C15 78 28 65 28 45C28 25 15 2 15 2C15 2 2 18 2 38C2 58 15 78 15 78Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 65C15 65 21 56 21 45C21 34 15 15 15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg> );
+          const EditIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>);
+          const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
+          const PaperclipIcon = () => ( <svg className="absolute top-4 -left-2 text-gray-400" width="30" height="80" viewBox="0 0 30 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 78C15 78 28 65 28 45C28 25 15 2 15 2C15 2 2 18 2 38C2 58 15 78 15 78Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 65C15 65 21 56 21 45C21 34 15 15 15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg> );
           const emptyPost = { title: '', content: '', tags: [] };
 
           const BlogPostForm = ({ post, onSave, onCancel }) => {
@@ -649,7 +638,7 @@
               const [isExpanded, setIsExpanded] = useState(false);
               return (
                   <div className="relative border-b-2 border-dashed border-black py-6 pl-4 last:border-b-0 font-typewriter">
-                      <PaperclipIcon className="top-4 -left-2 text-gray-400" />
+                      <PaperclipIcon />
                       <div className="pl-8">
                           <div className="flex justify-between items-start">
                               <div className="text-sm text-gray-700 space-y-1"><p><span className="font-bold">FROM:</span> {authorName}</p><p><span className="font-bold">DATE:</span> {post.timestamp}</p></div>
@@ -687,9 +676,8 @@
           );
       };
 
-      // --- From components/RequestsSection.tsx ---
       const RequestsSection = ({ requests, isAdmin, onAddRequest, onUpvote, onDelete }) => {
-          const DeleteIcon = ({className}) => ( <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
+          const DeleteIcon = () => ( <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
           const UpvoteIcon = () => (<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>);
           const RequestCard = ({ request, onUpvote, onDelete, isAdmin }) => {
               return (
@@ -734,18 +722,15 @@
           );
       };
 
-      // --- New Component: ProjectModals ---
+      // --- Modal Components ---
       const ProjectViewerModal = ({ project, onClose }) => {
           if (!project) return null;
-
           const getYoutubeEmbedUrl = (url) => {
               const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
               const match = (url || '').match(regExp);
               return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
           };
-
           const embedUrl = project.type === ProjectType.VIDEO ? getYoutubeEmbedUrl(project.mediaUrl) : null;
-
           return (
               <div 
                   className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
@@ -759,31 +744,24 @@
                           <h2 className="text-4xl font-heading font-bold">{project.title}</h2>
                           <button onClick={onClose} className="sketch-button bg-gray-200 px-3 py-1 font-bold">X</button>
                       </div>
-
                       <div className="flex-grow overflow-y-auto pr-2">
                           {project.type === ProjectType.IMAGE && <img src={project.mediaUrl} alt={project.title} className="w-full h-auto border-2 border-black" />}
-                          
                           {project.type === ProjectType.VIDEO && embedUrl && (
                               <div className="aspect-video w-full">
                                   <iframe src={embedUrl} title={project.title} className="w-full h-full border-2 border-black" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                               </div>
                           )}
-                          
                           {(project.type === ProjectType.EBOOK || project.type === ProjectType.DOCUMENT || project.type === ProjectType.OTHER) && (
                               <img src={project.mediaUrl} alt="Project preview" className="w-full h-auto border-2 border-black mb-4" />
                           )}
-
                           <div className="w-full border-t-2 border-dashed border-black my-4"></div>
-                          
                           <p className="text-gray-800 whitespace-pre-wrap">{project.description}</p>
-
                           {project.tags && project.tags.length > 0 && (
                               <div className="mt-4 flex flex-wrap gap-2">
                                   {project.tags.map(tag => ( <span key={tag} className="text-xs bg-gray-200 border border-black px-2 py-1">{tag}</span> ))}
                               </div>
                           )}
                       </div>
-
                       {project.projectUrl && project.type !== ProjectType.WEBSITE && (
                           <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="sketch-button bg-blue-300 mt-4 text-center py-2">
                               Open Full Project
@@ -822,7 +800,7 @@
                             <select name="type" value={formData.type} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectType).map(type => <option key={type} value={type}>{type}</option>)}</select>
                             <select name="status" value={formData.status} onChange={handleChange} className="sketch-input w-full">{Object.values(ProjectStatus).map(status => <option key={status} value={status}>{status}</option>)}</select>
                         </div>
-                         {formData.status !== ProjectStatus.COMPLETED && <div><label className="text-sm">Progress: {formData.progress}%</label><input type="range" name="progress" min="0" max="100" value={formData.progress} onChange={handleChange} className="w-full"/></div>}
+                         {formData.status !== ProjectStatus.COMPLETED && <div><label className="text-sm">Progress: {formData.progress || 0}%</label><input type="range" name="progress" min="0" max="100" value={formData.progress || 0} onChange={handleChange} className="w-full"/></div>}
                         <div className="flex gap-2"><button type="submit" className="sketch-button bg-green-300 px-4 py-1">Save</button><button type="button" onClick={onClose} className="sketch-button bg-gray-200 px-4 py-1">Cancel</button></div>
                     </Card>
                 </div>
@@ -830,12 +808,11 @@
         };
 
 
-      // --- From App.tsx ---
+      // --- Main App Component ---
       const App = () => {
         const ADMIN_PASSWORD = 'emergent';
         const ADMIN_USERNAME = 'seri.wrts';
 
-        // --- Firebase Configuration ---
         const firebaseConfig = {
           apiKey: "YOUR_API_KEY",
           authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -846,7 +823,6 @@
           appId: "YOUR_APP_ID"
         };
         
-        // --- Initial Data (used only if database is empty) ---
         const initialData = {
           profile: {
             name: "Alex Sketcherman", avatarUrl: "https://picsum.photos/seed/alex/200", isVerified: true,
@@ -885,7 +861,6 @@
 
         const dbRef = useRef(null);
 
-        // --- State Management ---
         const [profile, setProfile] = useState(initialData.profile);
         const [projects, setProjects] = useState(initialData.projects);
         const [posts, setPosts] = useState(initialData.posts);
@@ -895,13 +870,11 @@
         const [isDbConnected, setIsDbConnected] = useState(false);
         const [viewingProject, setViewingProject] = useState(null);
         
-        // --- Firebase Data Sync ---
         useEffect(() => {
           if (firebaseConfig.apiKey === "YOUR_API_KEY") {
             console.warn("Firebase config is not set. Please add your credentials.");
             return;
           }
-
           try {
             const app = firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
@@ -911,17 +884,24 @@
             const onDataChange = (snapshot) => {
               if (snapshot.exists()) {
                 const data = snapshot.val();
+                // Helper to convert Firebase objects to arrays, returns an empty array if input is null/undefined
+                const toArray = (fbObject) => fbObject ? Object.values(fbObject) : [];
+
                 setProfile(data.profile || initialData.profile);
-                setProjects(data.projects || initialData.projects);
-                setPosts(data.posts || initialData.posts);
-                setBlogPosts(data.blogPosts || initialData.blogPosts);
-                setRequests(data.requests || initialData.requests);
-                setComments(data.comments || initialData.comments);
+                // CRITICAL FIX: When Firebase stores an array, it saves it as an object with integer keys.
+                // If items are removed, the keys become sparse (e.g., {0: item, 2: item}).
+                // Object.values() converts this back into a proper JavaScript array that React can work with.
+                setProjects(data.projects ? toArray(data.projects) : []);
+                setPosts(data.posts ? toArray(data.posts) : []);
+                setBlogPosts(data.blogPosts ? toArray(data.blogPosts) : []);
+                setRequests(data.requests ? toArray(data.requests) : []);
+                setComments(data.comments ? toArray(data.comments) : []);
               } else {
                 console.log("No data found in Firebase. Uploading initial data.");
                 dbRef.current.set(initialData);
               }
             };
+
             dbRef.current.on('value', onDataChange);
             return () => dbRef.current.off('value', onDataChange);
           } catch (error) {
@@ -959,20 +939,17 @@
               if (sequenceTimeout.current) { clearTimeout(sequenceTimeout.current); }
           };
         }, []);
-
         const handleCloseEasterEgg = () => setShowEasterEgg(false);
 
         useEffect(() => {
-          const hasSeenPrivacyPopup = localStorage.getItem('hasSeenPrivacyPopup');
-          if (!hasSeenPrivacyPopup) { setShowPrivacyPopup(true); }
+          if (!localStorage.getItem('hasSeenPrivacyPopup')) { setShowPrivacyPopup(true); }
         }, []);
         const handleDismissPrivacyPopup = () => { localStorage.setItem('hasSeenPrivacyPopup', 'true'); setShowPrivacyPopup(false); };
         
         const handleLogin = (e) => {
           e.preventDefault();
           if (usernameInput.toLowerCase() === ADMIN_USERNAME && passwordInput === ADMIN_PASSWORD) { setIsAdminMode(true); setShowLogin(false); }
-          else if (usernameInput.toLowerCase() === ADMIN_USERNAME) { alert('Incorrect password for admin!'); }
-          else { setIsAdminMode(false); setShowLogin(false); }
+          else { alert('Incorrect credentials.'); }
           setUsernameInput(''); setPasswordInput('');
         }
         const handleLogout = () => setIsAdminMode(false);
@@ -1012,8 +989,7 @@
         const handleCloseModal = () => setEditingProject(null);
         const handleDeleteProject = (id) => {
           if(isAdminMode && isDbConnected && window.confirm('Delete this project?')) {
-            const newProjects = projects.filter(p => p.id !== id);
-            firebase.database().ref('projects').set(newProjects);
+            firebase.database().ref('projects').set(projects.filter(p => p.id !== id));
           }
         };
 
@@ -1022,7 +998,7 @@
           const newPost = { id: `post${Date.now()}`, ...postData, timestamp: 'Just now', reactions: {}, ...(postData.type === PostType.POLL && { pollVotes: {} }) };
           firebase.database().ref('posts').set([newPost, ...(posts || [])]);
         };
-        const handleDeletePost = (postId) => { if (isAdminMode && isDbConnected && window.confirm('Are you sure you want to delete this post?')) { firebase.database().ref('posts').set(posts.filter(p => p.id !== postId)); } };
+        const handleDeletePost = (postId) => { if (isAdminMode && isDbConnected && window.confirm('Delete this post?')) { firebase.database().ref('posts').set(posts.filter(p => p.id !== postId)); } };
         const handleReactToPost = (postId, emoji) => {
           if (!isDbConnected) return;
           const newPosts = posts.map(p => p.id === postId ? {...p, reactions: {...p.reactions, [emoji]: (p.reactions[emoji] || 0) + 1}} : p);
@@ -1041,7 +1017,7 @@
           const newComment = { id: `c${Date.now()}`, author: 'Anonymous Reader', text: commentText, timestamp: 'Just now', reactions: {} };
           firebase.database().ref('comments').set([...(comments || []), newComment]);
         };
-        const handleDeleteComment = (id) => { if(isAdminMode && isDbConnected) firebase.database().ref('comments').set(comments.filter(c => c.id !== id)); };
+        const handleDeleteComment = (id) => { if(isAdminMode && isDbConnected && window.confirm('Delete this comment?')) firebase.database().ref('comments').set(comments.filter(c => c.id !== id)); };
         const handleReactToComment = (commentId, emoji) => {
           if (!isDbConnected) return;
           const newComments = comments.map(c => c.id === commentId ? {...c, reactions: {...c.reactions, [emoji]: (c.reactions[emoji] || 0) + 1}} : c);
@@ -1071,7 +1047,7 @@
           const newRequests = requests.map(r => r.id === id ? {...r, upvotes: r.upvotes + 1} : r);
           firebase.database().ref('requests').set(newRequests);
         };
-        const handleDeleteRequest = (id) => { if(isAdminMode && isDbConnected) firebase.database().ref('requests').set(requests.filter(r => r.id !== id)); };
+        const handleDeleteRequest = (id) => { if(isAdminMode && isDbConnected && window.confirm('Delete this request?')) firebase.database().ref('requests').set(requests.filter(r => r.id !== id)); };
         
         const completedProjects = useMemo(() => (projects || []).filter(p => p.status === ProjectStatus.COMPLETED), [projects]);
         const upcomingProjects = useMemo(() => (projects || []).filter(p => p.status !== ProjectStatus.COMPLETED).sort((a,b) => (b.progress || 0) - (a.progress || 0)), [projects]);
@@ -1131,7 +1107,6 @@
         );
       };
 
-      // --- From index.tsx ---
       const rootElement = document.getElementById('root');
       if (!rootElement) {
         throw new Error("Could not find root element to mount to");
